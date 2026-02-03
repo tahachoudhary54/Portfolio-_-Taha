@@ -1147,7 +1147,7 @@ export default function Portfolio() {
                     <span className="project-tag">Responsive</span>
                   </div>
                   <div className="project-links">
-                    <a href="/Project9.HTML" target="_blank" rel="noopener noreferrer" className="project-link">View Project</a>
+                    <a href="BookMyShow.HTML" target="_blank" rel="noopener noreferrer" className="project-link">View Project</a>
                   </div>
                 </div>
               </div>
