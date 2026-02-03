@@ -1211,7 +1211,7 @@ export default function Portfolio() {
                 </div>
                 <div className="contact-item">
                   <div className="contact-icon" style={{ background: 'white', padding: '0.5rem' }}>
-                    <img src="Linkedin.jpg" alt="LinkedIn" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img src="LinkedIn.jpg" alt="LinkedIn" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
                   <div className="contact-item-content">
                     <h4>LinkedIn</h4>
@@ -1220,7 +1220,7 @@ export default function Portfolio() {
                 </div>
                 <div className="contact-item">
                   <div className="contact-icon" style={{ background: 'white', padding: '0.5rem' }}>
-                    <img src="Github.jpg" alt="GitHub" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img src="GitHub.jpg" alt="GitHub" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
                   <div className="contact-item-content">
                     <h4>GitHub</h4>
