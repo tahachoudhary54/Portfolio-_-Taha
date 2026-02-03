@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 
@@ -1094,12 +1094,12 @@ export default function Portfolio() {
                   <h3 className="project-title">Wanderlust Travel Website</h3>
                   <p className="project-description">
                     A stunning travel website featuring the Wanderlust brand with beautiful beach imagery. 
-                    Built with HTML, CSS, and JavaScript featuring smooth animations and responsive design.
+                    Built with HTML, CSS, and Tailwind CSS featuring smooth animations and responsive design.
                   </p>
                   <div className="project-tags">
                     <span className="project-tag">HTML</span>
                     <span className="project-tag">CSS</span>
-                    <span className="project-tag">JavaScript</span>
+                    <span className="project-tag">Tailwind</span>
                     <span className="project-tag">Responsive</span>
                   </div>
                   <div className="project-links">
@@ -1147,7 +1147,7 @@ export default function Portfolio() {
                     <span className="project-tag">Responsive</span>
                   </div>
                   <div className="project-links">
-                    <a href="BookMyShow.HTML" target="_blank" rel="noopener noreferrer" className="project-link">View Project</a>
+                    <a href="BookMyShow.html" target="_blank" rel="noopener noreferrer" className="project-link">View Project</a>
                   </div>
                 </div>
               </div>
