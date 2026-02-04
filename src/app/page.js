@@ -408,8 +408,12 @@ export default function Portfolio() {
 
         .skills-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          grid-template-columns: repeat(3, 1fr);
           gap: 2rem;
+        }
+
+        .skills-grid .skill-card-new:nth-child(7) {
+          grid-column: 2 / 3;
         }
 
         .skill-card-new {
@@ -881,7 +885,7 @@ export default function Portfolio() {
 
         .footer-bottom {
           display: flex;
-          justify-content: space-between;
+          justify-content: center;
           align-items: center;
           flex-wrap: wrap;
           gap: 1rem;
@@ -891,10 +895,6 @@ export default function Portfolio() {
           color: var(--text-dim);
           font-size: 0.9rem;
           margin: 0;
-        }
-
-        .footer-made {
-          color: var(--text-dim);
         }
 
         .whatsapp-float {
@@ -943,6 +943,14 @@ export default function Portfolio() {
 
           .section-header {
             margin-bottom: 3rem;
+          }
+
+          .skills-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .skills-grid .skill-card-new:nth-child(7) {
+            grid-column: 1 / 2;
           }
         }
 
@@ -1003,6 +1011,10 @@ export default function Portfolio() {
             gap: 1.5rem;
           }
 
+          .skills-grid .skill-card-new:nth-child(7) {
+            grid-column: 1 / 2;
+          }
+
           .skill-card-new {
             padding: 1.5rem;
           }
@@ -1035,6 +1047,11 @@ export default function Portfolio() {
           .footer-content {
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
+          }
+
+          .footer-bottom {
+            flex-direction: column;
+            text-align: center;
           }
         }
 
@@ -1100,11 +1117,6 @@ export default function Portfolio() {
           .footer-content {
             grid-template-columns: 1fr;
             gap: 2rem;
-          }
-
-          .footer-bottom {
-            flex-direction: column;
-            text-align: center;
           }
         }
 
@@ -1682,7 +1694,6 @@ export default function Portfolio() {
 
             <div className="footer-bottom">
               <p>© 2026 Taha Choudhary. All rights reserved.</p>
-              <p className="footer-made">Designed & Built with 💙 and code</p>
             </div>
           </div>
         </footer>
