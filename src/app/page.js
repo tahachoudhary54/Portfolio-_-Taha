@@ -1042,7 +1042,7 @@ export default function Portfolio() {
                 </div>
                 
                 <p style={{ color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                 I am uzer -centered designs and interactive prototypes for web applications with professional design tools.
+                 I am designs and interactive prototypes for web applications with professional design tools.
                 </p>
               </div>
 
