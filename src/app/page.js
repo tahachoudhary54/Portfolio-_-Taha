@@ -1524,7 +1524,7 @@ export default function Portfolio() {
               <div className="education-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
                   <div style={{ width: '70px', height: '70px', background: 'white', borderRadius: '0.75rem', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <img src="/clg.png" alt="Marceline College" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img src="./clg.png" alt="Marceline College" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
                   <div>
                     <h3 className="education-title">Higher Secondary Certificate (HSC)</h3>
