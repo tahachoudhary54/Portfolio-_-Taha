@@ -187,6 +187,41 @@ export default function Portfolio() {
           overflow: hidden;
         }
 
+        .hero-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 3rem;
+          align-items: center;
+        }
+
+        .hero-image {
+          width: 100%;
+          max-width: 500px;
+          aspect-ratio: 1;
+          background: linear-gradient(135deg, var(--dark-light), rgba(0, 102, 255, 0.1));
+          border-radius: 2rem;
+          border: 2px solid rgba(0, 245, 255, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+          margin-left: auto;
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 2rem;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+
         .hero::before {
           content: '';
           position: absolute;
@@ -412,7 +447,7 @@ export default function Portfolio() {
           gap: 2rem;
         }
 
-        .skills-grid .skill-card-new:nth-child(7) {
+        .skills-grid .skill-card-new:nth-child(10) {
           grid-column: 2 / 3;
         }
 
@@ -949,7 +984,7 @@ export default function Portfolio() {
             grid-template-columns: repeat(2, 1fr);
           }
 
-          .skills-grid .skill-card-new:nth-child(7) {
+          .skills-grid .skill-card-new:nth-child(10) {
             grid-column: 1 / 2;
           }
         }
@@ -1011,7 +1046,7 @@ export default function Portfolio() {
             gap: 1.5rem;
           }
 
-          .skills-grid .skill-card-new:nth-child(7) {
+          .skills-grid .skill-card-new:nth-child(10) {
             grid-column: 1 / 2;
           }
 
@@ -1158,17 +1193,22 @@ export default function Portfolio() {
         {/* Hero Section */}
         <section id="home" className="hero">
           <div className="container">
-            <div className="hero-content">
-              <h1>
-                Hi, I&apos;m<br /><span className="gradient-text">Taha Choudhary</span>
-              </h1>
-              <p>
-                Trainee at Nexcore Institute of Technology, mastering AI & ML while building 
-                beautiful web experiences with modern technologies.
-              </p>
-              <div className="cta-buttons">
-                <a href="#contact" className="btn btn-primary">Get In Touch</a>
-                <a href="#skills" className="btn btn-secondary">View Skills</a>
+            <div className="hero-grid">
+              <div className="hero-content">
+                <h1>
+                  Hi, I&apos;m<br /><span className="gradient-text">Taha Choudhary</span>
+                </h1>
+                <p>
+                  Trainee at Nexcore Institute of Technology, mastering AI & ML while building 
+                  beautiful web experiences with modern technologies.
+                </p>
+                <div className="cta-buttons">
+                  <a href="#contact" className="btn btn-primary">Get In Touch</a>
+                  <a href="#skills" className="btn btn-secondary">View Skills</a>
+                </div>
+              </div>
+              <div className="hero-image">
+                <img src="/Taha.png" alt="Taha Choudhary" />
               </div>
             </div>
           </div>
@@ -1181,53 +1221,66 @@ export default function Portfolio() {
               <div className="section-tag">📖 Get to know me</div>
               <h2 className="section-title">About Me</h2>
             </div>
-            <div className="about-grid">
-              <div className="about-image">
-                <img src="/Taha.png" alt="Taha Choudhary" />
-              </div>
-              <div className="about-content">
-                <h3>Building the Future with AI & Web Technologies</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
-                    <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                      🎓
-                    </div>
-                    <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                      Currently a trainee at <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>Nexcore Institute of Technology</span>, diving deep into AI & ML (2025-2028)
-                    </p>
+            <div className="about-content" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+              <h3 style={{ textAlign: 'center', marginBottom: '2.5rem' }}>Building the Future with AI & Web Technologies</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
+                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+                    🎓
                   </div>
-                  
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
-                    <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                      💻
-                    </div>
-                    <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                      Passionate about creating <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>beautiful, functional websites</span> using modern web technologies
-                    </p>
-                  </div>
-                  
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
-                    <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                      🚀
-                    </div>
-                    <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                      Believer in <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>learning by doing</span> - constantly working on projects that merge web development with AI
-                    </p>
-                  </div>
+                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
+                    Currently a trainee at <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>Nexcore Institute of Technology</span>, pursuing an intensive 3-year program in AI & Machine Learning (2025-2028), where I&apos;m building a strong foundation in artificial intelligence, data science, and modern software development practices.
+                  </p>
                 </div>
-                <div className="stats">
-                  <div className="stat-item">
-                    <div className="stat-number">2025</div>
-                    <div className="stat-label">Started Journey</div>
+                
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
+                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+                    💻
                   </div>
-                  <div className="stat-item">
-                    <div className="stat-number">6+</div>
-                    <div className="stat-label">Technologies</div>
+                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
+                    Passionate about creating <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>beautiful, functional, and user-centric websites</span> using modern web technologies like React, Next.js, and Tailwind CSS. I focus on building responsive interfaces that provide seamless experiences across all devices.
+                  </p>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
+                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+                    🚀
                   </div>
-                  <div className="stat-item">
-                    <div className="stat-number">3</div>
-                    <div className="stat-label">Years Program</div>
+                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
+                    Strong believer in <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>learning by doing</span> - I constantly work on real-world projects that merge web development with AI capabilities, exploring how machine learning can enhance user experiences and solve practical problems.
+                  </p>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
+                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+                    🎨
                   </div>
+                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
+                    Skilled in <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>UI/UX design with Figma</span>, I bridge the gap between design and development by creating intuitive interfaces and then bringing them to life with clean, maintainable code. I believe great products start with great design.
+                  </p>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
+                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+                    🌐
+                  </div>
+                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
+                    Experienced with <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>full-stack development</span>, working with both frontend technologies (HTML, CSS, JavaScript, React) and backend frameworks (Express.js), along with CMS platforms like WordPress for rapid website deployment and customization.
+                  </p>
+                </div>
+              </div>
+              <div className="stats">
+                <div className="stat-item">
+                  <div className="stat-number">2025</div>
+                  <div className="stat-label">Started Journey</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-number">10+</div>
+                  <div className="stat-label">Technologies</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-number">3</div>
+                  <div className="stat-label">Years Program</div>
                 </div>
               </div>
             </div>
@@ -1370,14 +1423,14 @@ export default function Portfolio() {
                 <p className="skill-description">Fundamentals & syntax basics</p>
                 <div className="skill-proficiency">
                   <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#03599C' }}>20%</span>
+                  <span className="proficiency-value" style={{ color: '#03599C' }}>60%</span>
                 </div>
                 <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '20%', background: 'linear-gradient(90deg, #03599C, #659AD3)' }}></div>
+                  <div className="progress-fill" style={{ width: '60%', background: 'linear-gradient(90deg, #03599C, #659AD3)' }}></div>
                 </div>
                 <div className="skill-footer">
-                  <span className="skill-duration">⏱ 2 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #03599C, #659AD3)', color: 'white' }}>Beginner</span>
+                  <span className="skill-duration">⏱ 4 Months</span>
+                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #03599C, #659AD3)', color: 'white' }}>Intermediate</span>
                 </div>
               </div>
 
@@ -1401,6 +1454,81 @@ export default function Portfolio() {
                 <div className="skill-footer">
                   <span className="skill-duration">⏱ 5 Months</span>
                   <span className="skill-level" style={{ background: 'linear-gradient(135deg, #F24E1E, #FF7262)', color: 'white' }}>Advanced</span>
+                </div>
+              </div>
+
+              {/* React Card */}
+              <div className="skill-card-new">
+                <div className="skill-icon-container" style={{ background: 'rgba(97, 218, 251, 0.1)' }}>
+                  <div className="skill-icon" style={{ background: 'white' }}>
+                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
+                      <g fill="#61DAFB"><circle cx="64" cy="64" r="11.4"></circle><path d="M107.3 45.2c-2.2-.8-4.5-1.6-6.9-2.3.6-2.4 1.1-4.8 1.5-7.1 2.1-13.2-.2-22.5-6.6-26.1-1.9-1.1-4-1.6-6.4-1.6-7 0-15.9 5.2-24.9 13.9-9-8.7-17.9-13.9-24.9-13.9-2.4 0-4.5.5-6.4 1.6-6.4 3.7-8.7 13-6.6 26.1.4 2.3.9 4.7 1.5 7.1-2.4.7-4.7 1.4-6.9 2.3C8.2 50 1.4 56.6 1.4 64s6.9 14 19.3 18.8c2.2.8 4.5 1.6 6.9 2.3-.6 2.4-1.1 4.8-1.5 7.1-2.1 13.2.2 22.5 6.6 26.1 1.9 1.1 4 1.6 6.4 1.6 7.1 0 16-5.2 24.9-13.9 9 8.7 17.9 13.9 24.9 13.9 2.4 0 4.5-.5 6.4-1.6 6.4-3.7 8.7-13 6.6-26.1-.4-2.3-.9-4.7-1.5-7.1 2.4-.7 4.7-1.4 6.9-2.3 12.5-4.8 19.3-11.4 19.3-18.8s-6.8-14-19.3-18.8zM92.5 14.7c4.1 2.4 5.5 9.8 3.8 20.3-.3 2.1-.8 4.3-1.4 6.6-5.2-1.2-10.7-2-16.5-2.5-3.4-4.8-6.9-9.1-10.4-13 7.4-7.3 14.9-12.3 21-12.3 1.3 0 2.5.3 3.5.9zM81.3 74c-1.8 3.2-3.9 6.4-6.1 9.6-3.7.3-7.4.4-11.2.4-3.9 0-7.6-.1-11.2-.4-2.2-3.2-4.2-6.4-6-9.6-1.9-3.3-3.7-6.7-5.3-10 1.6-3.3 3.4-6.7 5.3-10 1.8-3.2 3.9-6.4 6.1-9.6 3.7-.3 7.4-.4 11.2-.4 3.9 0 7.6.1 11.2.4 2.2 3.2 4.2 6.4 6 9.6 1.9 3.3 3.7 6.7 5.3 10-1.7 3.3-3.4 6.6-5.3 10zm8.3-3.3c1.5 3.5 2.7 6.9 3.8 10.3-3.4.8-7 1.4-10.8 1.9 1.2-1.9 2.5-3.9 3.6-6 1.2-2.1 2.3-4.2 3.4-6.2zM64 97.8c-2.4-2.6-4.7-5.4-6.9-8.3 2.3.1 4.6.2 6.9.2 2.3 0 4.6-.1 6.9-.2-2.2 2.9-4.5 5.7-6.9 8.3zm-18.6-15c-3.8-.5-7.4-1.1-10.8-1.9 1.1-3.3 2.3-6.8 3.8-10.3 1.1 2 2.2 4.1 3.4 6.1 1.2 2.2 2.4 4.1 3.6 6.1zm-7-25.5c-1.5-3.5-2.7-6.9-3.8-10.3 3.4-.8 7-1.4 10.8-1.9-1.2 1.9-2.5 3.9-3.6 6-1.2 2.1-2.3 4.2-3.4 6.2zM64 30.2c2.4 2.6 4.7 5.4 6.9 8.3-2.3-.1-4.6-.2-6.9-.2-2.3 0-4.6.1-6.9.2 2.2-2.9 4.5-5.7 6.9-8.3zm22.2 21l-3.6-6c3.8.5 7.4 1.1 10.8 1.9-1.1 3.3-2.3 6.8-3.8 10.3-1.1-2.1-2.2-4.2-3.4-6.2zM31.7 35c-1.7-10.5-.3-17.9 3.8-20.3 1-.6 2.2-.9 3.5-.9 6 0 13.5 4.9 21 12.3-3.5 3.8-7 8.2-10.4 13-5.8.5-11.3 1.4-16.5 2.5-.6-2.3-1-4.5-1.4-6.6zM7 64c0-4.7 5.7-9.7 15.7-13.4 2-.8 4.2-1.5 6.4-2.1 1.6 5 3.6 10.3 6 15.6-2.4 5.3-4.5 10.5-6 15.5C15.3 75.6 7 69.6 7 64zm28.5 49.3c-4.1-2.4-5.5-9.8-3.8-20.3.3-2.1.8-4.3 1.4-6.6 5.2 1.2 10.7 2 16.5 2.5 3.4 4.8 6.9 9.1 10.4 13-7.4 7.3-14.9 12.3-21 12.3-1.3 0-2.5-.3-3.5-.9zM96.3 93c1.7 10.5.3 17.9-3.8 20.3-1 .6-2.2.9-3.5.9-6 0-13.5-4.9-21-12.3 3.5-3.8 7-8.2 10.4-13 5.8-.5 11.3-1.4 16.5-2.5.6 2.3 1 4.5 1.4 6.6zm9-15.6c-2 .8-4.2 1.5-6.4 2.1-1.6-5-3.6-10.3-6-15.6 2.4-5.3 4.5-10.5 6-15.5 13.8 4 22.1 10 22.1 15.6 0 4.7-5.8 9.7-15.7 13.4z"></path></g>
+                    </svg>
+                  </div>
+                </div>
+                <h3 className="skill-title">React</h3>
+                <p className="skill-category">LIBRARY</p>
+                <p className="skill-description">Component-based UI development</p>
+                <div className="skill-proficiency">
+                  <span className="proficiency-label">Proficiency</span>
+                  <span className="proficiency-value" style={{ color: '#61DAFB' }}>70%</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: '70%', background: 'linear-gradient(90deg, #61DAFB, #00D8FF)' }}></div>
+                </div>
+                <div className="skill-footer">
+                  <span className="skill-duration">⏱ 4 Months</span>
+                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #61DAFB, #00D8FF)', color: 'white' }}>Intermediate</span>
+                </div>
+              </div>
+
+              {/* Express.js Card */}
+              <div className="skill-card-new">
+                <div className="skill-icon-container" style={{ background: 'rgba(0, 0, 0, 0.1)' }}>
+                  <div className="skill-icon" style={{ background: 'white' }}>
+                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
+                      <path fill="#000000" d="M126.67 98.44c-4.56 1.16-7.38.05-9.91-3.75-5.68-8.51-11.95-16.63-18-24.9-.78-1.07-1.59-2.12-2.6-3.45C89 76 81.85 85.2 75.14 94.77c-2.4 3.42-4.92 4.91-9.4 3.7l26.92-36.13L67.6 29.71c4.31-.84 7.29-.41 9.93 3.45 5.83 8.52 12.26 16.63 18.67 25.21 6.45-8.55 12.8-16.67 18.8-25.11 2.41-3.42 5-4.72 9.33-3.46-3.28 4.35-6.49 8.63-9.72 12.88-4.36 5.73-8.64 11.53-13.16 17.14-1.61 2-1.35 3.3.09 5.19C109.9 76 118.16 87.1 126.67 98.44zM1.33 61.74c.72-3.61 1.2-7.29 2.2-10.83 6-21.43 30.6-30.34 47.5-17.06C60.93 41.64 63.39 52.62 62.9 65H7.1c-.84 22.21 15.15 35.62 35.53 28.78 7.15-2.4 11.36-8 13.47-15 1.07-3.51 2.84-4.06 6.14-3.06-1.69 8.76-5.52 16.08-13.52 20.66-12 6.86-29.13 4.64-38.14-4.89C5.26 85.89 3 78.92 2 71.39c-.15-1.2-.46-2.38-.7-3.57q.03-3.04.03-6.08zm5.87-1.49h50.43c-.33-16.06-10.33-27.47-24-27.57-15-.12-25.78 11.02-26.43 27.57z"></path>
+                    </svg>
+                  </div>
+                </div>
+                <h3 className="skill-title">Express.js</h3>
+                <p className="skill-category">BACKEND</p>
+                <p className="skill-description">RESTful API development</p>
+                <div className="skill-proficiency">
+                  <span className="proficiency-label">Proficiency</span>
+                  <span className="proficiency-value" style={{ color: '#000000' }}>65%</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: '65%', background: 'linear-gradient(90deg, #000000, #404040)' }}></div>
+                </div>
+                <div className="skill-footer">
+                  <span className="skill-duration">⏱ 3 Months</span>
+                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #000000, #404040)', color: 'white' }}>Intermediate</span>
+                </div>
+              </div>
+
+              {/* Next.js Card */}
+              <div className="skill-card-new">
+                <div className="skill-icon-container" style={{ background: 'rgba(0, 0, 0, 0.1)' }}>
+                  <div className="skill-icon" style={{ background: 'white' }}>
+                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
+                      <path fill="#000000" d="M64 0C28.7 0 0 28.7 0 64s28.7 64 64 64c11.2 0 21.7-2.9 30.8-7.9L48.4 55.3v36.6h-6.8V41.8h6.8l50.5 75.8C116.4 106.2 128 86.5 128 64c0-35.3-28.7-64-64-64zm22.1 84.6l-7.5-11.3V41.8h7.5v42.8z"></path>
+                    </svg>
+                  </div>
+                </div>
+                <h3 className="skill-title">Next.js</h3>
+                <p className="skill-category">FRAMEWORK</p>
+                <p className="skill-description">React framework for production</p>
+                <div className="skill-proficiency">
+                  <span className="proficiency-label">Proficiency</span>
+                  <span className="proficiency-value" style={{ color: '#000000' }}>75%</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: '75%', background: 'linear-gradient(90deg, #000000, #404040)' }}></div>
+                </div>
+                <div className="skill-footer">
+                  <span className="skill-duration">⏱ 4 Months</span>
+                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #000000, #404040)', color: 'white' }}>Advanced</span>
                 </div>
               </div>
 
