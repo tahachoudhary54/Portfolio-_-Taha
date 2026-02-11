@@ -260,7 +260,7 @@ export default function Portfolio() {
           font-family: 'Poppins', sans-serif;
           font-size: clamp(2.5rem, 8vw, 6rem);
           font-weight: 800;
-          line-height: 1.1;
+          line-height: 0.95;
           margin-bottom: 1.5rem;
           padding-bottom: 0.5rem;
           animation: slideUp 0.8s ease-out 0.2s both;
