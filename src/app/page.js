@@ -744,6 +744,73 @@ export default function Portfolio() {
           font-size: clamp(0.95rem, 1.5vw, 1.125rem);
         }
 
+        .certificates-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2rem;
+        }
+
+        .certificate-card {
+          background: var(--dark-light);
+          border-radius: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          transition: all 0.3s;
+          overflow: hidden;
+          cursor: pointer;
+        }
+
+        .certificate-card:hover {
+          transform: translateY(-10px);
+          border-color: var(--primary);
+          box-shadow: 0 20px 40px rgba(0, 102, 255, 0.2);
+        }
+
+        .certificate-image {
+          width: 100%;
+          height: 250px;
+          background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 245, 255, 0.1));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .certificate-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s;
+        }
+
+        .certificate-card:hover .certificate-image img {
+          transform: scale(1.05);
+        }
+
+        .certificate-content {
+          padding: 1.5rem;
+        }
+
+        .certificate-title {
+          font-family: 'Poppins', sans-serif;
+          font-size: clamp(1.1rem, 2vw, 1.5rem);
+          margin-bottom: 0.75rem;
+          line-height: 1.4;
+          color: var(--text);
+        }
+
+        .certificate-issuer {
+          color: var(--secondary);
+          font-weight: 600;
+          font-size: 0.95rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .certificate-date {
+          color: var(--text-dim);
+          font-size: 0.875rem;
+        }
+
         .contact-info {
           max-width: 800px;
           margin: 0 auto;
@@ -1280,6 +1347,7 @@ export default function Portfolio() {
               <li><Link href="#skills" onClick={handleNavClick}>Skills</Link></li>
               <li><Link href="#projects" onClick={handleNavClick}>Projects</Link></li>
               <li><Link href="#education" onClick={handleNavClick}>Education</Link></li>
+              <li><Link href="#certificates" onClick={handleNavClick}>Certificates</Link></li>
               <li><Link href="#contact" onClick={handleNavClick}>Contact</Link></li>
             </ul>
           </div>
@@ -1682,7 +1750,7 @@ export default function Portfolio() {
                     <span className="project-tag">Responsive</span>
                   </div>
                   <div className="project-links">
-                    <Link href="/https://wanderlust-nu-dusky.vercel.app/" target="_blank" rel="noopener noreferrer" className="project-link">View Project</Link>
+                    <Link href="/https://wanderlust-nu-dusky.vercel.app/ " target="_blank" rel="noopener noreferrer" className="project-link">View Project</Link>
                   </div>
                 </div>
               </div>
@@ -1784,6 +1852,116 @@ export default function Portfolio() {
                 development technologies including HTML, CSS, Tailwind CSS, JavaScript, Figma for design, 
                 and WordPress for content management.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Certificates Section */}
+        <section id="certificates">
+          <div className="container">
+            <div className="section-header">
+              <div className="section-tag">🏆 Achievements</div>
+              <h2 className="section-title">Certificates</h2>
+              <p className="section-subtitle">
+                Professional certifications and course completions
+              </p>
+            </div>
+            <div className="certificates-grid">
+              {/* Certificate 1 */}
+              <div className="certificate-card">
+                <div className="certificate-image">
+                  <img src="/cert1.jpg" alt="Teaching the AI Fluency Framework" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">Teaching the AI Fluency Framework</h3>
+                  <p className="certificate-issuer">ANTHROPIC</p>
+                  <p className="certificate-date">2026</p>
+                </div>
+              </div>
+
+              {/* Certificate 2 */}
+              <div className="certificate-card">
+                <div className="certificate-image">
+                  <img src="/cert2.jpg" alt="Claude 101" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">Claude 101</h3>
+                  <p className="certificate-issuer">ANTHROPIC</p>
+                  <p className="certificate-date">2026</p>
+                </div>
+              </div>
+
+              {/* Certificate 3 */}
+              <div className="certificate-card">
+                <div className="certificate-image">
+                  <img src="/cert3.jpg" alt="AI Fluency for Educators" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">AI Fluency for Educators</h3>
+                  <p className="certificate-issuer">ANTHROPIC</p>
+                  <p className="certificate-date">2026</p>
+                </div>
+              </div>
+
+              {/* Certificate 4 */}
+              <div className="certificate-card">
+                <div className="certificate-image">
+                  <img src="/cert4.jpg" alt="AI Fluency for Nonprofits" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">AI Fluency for Nonprofits</h3>
+                  <p className="certificate-issuer">ANTHROPIC & GIVINGTUESDAY</p>
+                  <p className="certificate-date">2026</p>
+                </div>
+              </div>
+
+              {/* Certificate 5 */}
+              <div className="certificate-card">
+                <div className="certificate-image">
+                  <img src="/cert5.jpg" alt="AI Fluency for Students" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">AI Fluency for Students</h3>
+                  <p className="certificate-issuer">ANTHROPIC</p>
+                  <p className="certificate-date">2026</p>
+                </div>
+              </div>
+
+              {/* Certificate 6 */}
+              <div className="certificate-card">
+                <div className="certificate-image">
+                  <img src="/cert6.jpg" alt="AI Fluency: Framework & Foundations" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">AI Fluency: Framework & Foundations</h3>
+                  <p className="certificate-issuer">ANTHROPIC</p>
+                  <p className="certificate-date">2026</p>
+                </div>
+              </div>
+
+              {/* Certificate 7 */}
+              <div className="certificate-card">
+                <div className="certificate-image">
+                  <img src="/cert7.jpg" alt="AI For All - AI Appreciate" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">AI For All - AI Appreciate</h3>
+                  <p className="certificate-issuer">Intel & Digital India</p>
+                  <p className="certificate-date">January 12, 2026</p>
+                </div>
+              </div>
+
+              {/* Certificate 8 */}
+              <div className="certificate-card">
+                <div className="certificate-image">
+                  <img src="/cert8.jpg" alt="Yuva AI For ALL - English" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">Yuva AI For ALL - English</h3>
+                  <p className="certificate-issuer">AISECT LEARN</p>
+                  <p className="certificate-date">January 21, 2026</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1890,11 +2068,13 @@ export default function Portfolio() {
                 <h4>Connect</h4>
                 <ul className="footer-links">
                   <li><Link href="#education">Education</Link></li>
+                  <li><Link href="#certificates">Certificates</Link></li>
                   <li><Link href="#contact">Contact</Link></li>
                   <li><Link href="https://github.com/tahachoudhary54" target="_blank" rel="noopener noreferrer">GitHub</Link></li>
                   <li><Link href="https://www.linkedin.com/in/taha-choudhary-3aa283358" target="_blank" rel="noopener noreferrer">LinkedIn</Link></li>
                 </ul>
               </div>
+
 
               <div className="footer-section">
                 <h4>Get In Touch</h4>
