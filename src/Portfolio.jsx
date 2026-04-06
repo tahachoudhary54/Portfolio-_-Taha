@@ -7,6 +7,11 @@ const certificates = [
     date: "2026",
     tag: "AI Fluency",
     image: "/certificates/teaching-ai-fluency-framework.png",
+
+
+
+
+    
     description:
       "Completed advanced learning focused on teaching AI fluency concepts, responsible usage, and practical classroom integration.",
     skills: ["AI Fluency", "Teaching", "Prompting", "AI Literacy"],
