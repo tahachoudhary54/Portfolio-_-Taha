@@ -7,6 +7,7 @@ export default function Portfolio() {
   const [menuActive, setMenuActive] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
 
   useEffect(() => {
     setMounted(true);
@@ -746,8 +747,9 @@ export default function Portfolio() {
 
         .certificates-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
           gap: 2rem;
+          align-items: start;
         }
 
         .certificate-card {
@@ -757,6 +759,9 @@ export default function Portfolio() {
           transition: all 0.3s;
           overflow: hidden;
           cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
         }
 
         .certificate-card:hover {
@@ -767,13 +772,14 @@ export default function Portfolio() {
 
         .certificate-image {
           width: 100%;
-          height: 250px;
+          height: 220px;
           background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 245, 255, 0.1));
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
           position: relative;
+          flex-shrink: 0;
         }
 
         .certificate-image img {
@@ -789,26 +795,311 @@ export default function Portfolio() {
 
         .certificate-content {
           padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          flex-grow: 1;
         }
 
         .certificate-title {
           font-family: 'Poppins', sans-serif;
-          font-size: clamp(1.1rem, 2vw, 1.5rem);
-          margin-bottom: 0.75rem;
+          font-size: clamp(1.1rem, 2vw, 1.35rem);
+          margin-bottom: 0.5rem;
           line-height: 1.4;
           color: var(--text);
+          min-height: 2.8em;
         }
 
         .certificate-issuer {
           color: var(--secondary);
           font-weight: 600;
           font-size: 0.95rem;
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.25rem;
         }
 
         .certificate-date {
           color: var(--text-dim);
           font-size: 0.875rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .certificate-description {
+          color: var(--text-dim);
+          font-size: 0.9rem;
+          line-height: 1.6;
+          margin-top: auto;
+        }
+
+        .certificate-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.92);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+          padding: 2rem;
+          animation: fadeIn 0.3s ease;
+          backdrop-filter: blur(5px);
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .certificate-modal-content {
+          background: var(--dark-light);
+          border-radius: 2rem;
+          max-width: 1100px;
+          width: 100%;
+          max-height: 90vh;
+          overflow: hidden;
+          position: relative;
+          border: 1px solid rgba(0, 102, 255, 0.2);
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+          animation: slideUp 0.4s ease;
+          display: grid;
+          grid-template-rows: auto 1fr;
+        }
+
+        .certificate-modal-close {
+          position: absolute;
+          top: 1.5rem;
+          right: 1.5rem;
+          width: 50px;
+          height: 50px;
+          background: rgba(0, 0, 0, 0.9);
+          border: 2px solid rgba(255, 255, 255, 0.1);
+          border-radius: 50%;
+          color: white;
+          font-size: 28px;
+          font-weight: 300;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s;
+          z-index: 10;
+          backdrop-filter: blur(10px);
+        }
+
+        .certificate-modal-close:hover {
+          background: var(--accent);
+          border-color: var(--accent);
+          transform: rotate(90deg) scale(1.1);
+        }
+
+        .certificate-modal-image {
+          width: 100%;
+          min-height: 50vh;
+          max-height: 55vh;
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 102, 255, 0.05));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 3rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .certificate-modal-image img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          display: block;
+          border-radius: 0.5rem;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .certificate-modal-details {
+          padding: 2.5rem 3rem;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+        }
+
+        .certificate-modal-details::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .certificate-modal-details::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+        }
+
+        .certificate-modal-details::-webkit-scrollbar-thumb {
+          background: rgba(0, 102, 255, 0.5);
+          border-radius: 10px;
+        }
+
+        .certificate-modal-details::-webkit-scrollbar-thumb:hover {
+          background: rgba(0, 102, 255, 0.7);
+        }
+
+        .certificate-modal-title {
+          font-family: 'Poppins', sans-serif;
+          font-size: clamp(1.75rem, 3vw, 2.75rem);
+          margin-bottom: 0.5rem;
+          color: var(--text);
+          line-height: 1.3;
+          font-weight: 700;
+        }
+
+        .certificate-modal-issuer {
+          color: var(--secondary);
+          font-weight: 600;
+          font-size: 1.35rem;
+          margin-bottom: 0.25rem;
+          letter-spacing: 0.5px;
+        }
+
+        .certificate-modal-date {
+          color: var(--text-dim);
+          font-size: 1.05rem;
+          margin-bottom: 1.5rem;
+          padding-bottom: 1.5rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .certificate-modal-description {
+          color: var(--text-dim);
+          font-size: 1.1rem;
+          line-height: 1.9;
+          margin-bottom: 1.5rem;
+          text-align: justify;
+        }
+
+        .certificate-modal-skills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.85rem;
+          margin-top: 0.5rem;
+        }
+
+        .certificate-skill-tag {
+          padding: 0.65rem 1.25rem;
+          background: rgba(0, 102, 255, 0.12);
+          border: 1px solid rgba(0, 102, 255, 0.35);
+          border-radius: 50px;
+          font-size: 0.95rem;
+          color: var(--secondary);
+          font-weight: 500;
+          transition: all 0.3s;
+        }
+
+        .certificate-skill-tag:hover {
+          background: rgba(0, 102, 255, 0.2);
+          border-color: var(--secondary);
+          transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+          .certificate-modal {
+            padding: 1rem;
+          }
+
+          .certificate-modal-content {
+            border-radius: 1.5rem;
+          }
+
+          .certificate-modal-image {
+            min-height: 40vh;
+            max-height: 45vh;
+            padding: 2rem;
+          }
+
+          .certificate-modal-details {
+            padding: 2rem 1.5rem;
+            gap: 1rem;
+          }
+
+          .certificate-modal-title {
+            font-size: 1.75rem;
+          }
+
+          .certificate-modal-issuer {
+            font-size: 1.15rem;
+          }
+
+          .certificate-modal-description {
+            font-size: 1rem;
+          }
+
+          .certificate-modal-close {
+            top: 1rem;
+            right: 1rem;
+            width: 45px;
+            height: 45px;
+            font-size: 24px;
+          }
+
+          .certificates-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+          }
+
+          .certificate-image {
+            height: 200px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .certificate-modal {
+            padding: 0.75rem;
+          }
+
+          .certificate-modal-content {
+            border-radius: 1.25rem;
+          }
+
+          .certificate-modal-image {
+            min-height: 35vh;
+            max-height: 40vh;
+            padding: 1.5rem;
+          }
+
+          .certificate-modal-details {
+            padding: 1.5rem 1rem;
+          }
+
+          .certificate-modal-title {
+            font-size: 1.5rem;
+          }
+
+          .certificate-modal-issuer {
+            font-size: 1rem;
+          }
+
+          .certificate-modal-description {
+            font-size: 0.95rem;
+            text-align: left;
+          }
+
+          .certificate-modal-close {
+            width: 40px;
+            height: 40px;
+            font-size: 22px;
+            top: 0.75rem;
+            right: 0.75rem;
+          }
+
+          .certificate-skill-tag {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+          }
+
+          .certificates-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+
+          .certificate-image {
+            height: 180px;
+          }
         }
 
         .contact-info {
@@ -1868,98 +2159,162 @@ export default function Portfolio() {
             </div>
             <div className="certificates-grid">
               {/* Certificate 1 */}
-              <div className="certificate-card">
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/certificates/teaching-ai-fluency-framework.png',
+                title: 'Teaching the AI Fluency Framework',
+                issuer: 'ANTHROPIC',
+                date: '2026',
+                description: 'Completed comprehensive training on teaching AI fluency concepts and frameworks. This certification demonstrates proficiency in educating others about artificial intelligence, machine learning fundamentals, and responsible AI practices. Learned effective pedagogical approaches for making AI concepts accessible to diverse audiences.',
+                skills: ['AI Education', 'Teaching Methods', 'AI Ethics', 'Curriculum Design']
+              })}>
                 <div className="certificate-image">
-                  <img src="/cert1.jpg" alt="Teaching the AI Fluency Framework" />
+                  <img src="/certificates/teaching-ai-fluency-framework.png" alt="Teaching the AI Fluency Framework" />
                 </div>
                 <div className="certificate-content">
                   <h3 className="certificate-title">Teaching the AI Fluency Framework</h3>
                   <p className="certificate-issuer">ANTHROPIC</p>
                   <p className="certificate-date">2026</p>
+                  <p className="certificate-description">Training on teaching AI fluency concepts and frameworks to diverse audiences.</p>
                 </div>
               </div>
 
               {/* Certificate 2 */}
-              <div className="certificate-card">
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/Claude 101.png',
+                title: 'Claude 101',
+                issuer: 'ANTHROPIC',
+                date: '2026',
+                description: 'Foundational course on Claude AI assistant, covering core capabilities, best practices for prompt engineering, and effective ways to leverage AI for various tasks. Gained hands-on experience with Claude\'s features including conversation, analysis, coding assistance, and creative writing. Learned to craft effective prompts and understand AI limitations.',
+                skills: ['Prompt Engineering', 'AI Interaction', 'Claude AI', 'Conversational AI']
+              })}>
                 <div className="certificate-image">
-                  <img src="/cert2.jpg" alt="Claude 101" />
+                  <img src="/Claude 101.png" alt="Claude 101" />
                 </div>
                 <div className="certificate-content">
                   <h3 className="certificate-title">Claude 101</h3>
                   <p className="certificate-issuer">ANTHROPIC</p>
                   <p className="certificate-date">2026</p>
+                  <p className="certificate-description">Foundational training on Claude AI capabilities and prompt engineering techniques.</p>
                 </div>
               </div>
 
               {/* Certificate 3 */}
-              <div className="certificate-card">
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/AI Fluency for Educators.png',
+                title: 'AI Fluency for Educators',
+                issuer: 'ANTHROPIC',
+                date: '2026',
+                description: 'Specialized program designed for educators to integrate AI tools into teaching practices. Covered practical applications of AI in education, ethical considerations, student engagement strategies, and methods to enhance learning outcomes. Explored how to prepare students for an AI-driven future while maintaining academic integrity.',
+                skills: ['Educational Technology', 'AI in Education', 'Student Engagement', 'Digital Literacy']
+              })}>
                 <div className="certificate-image">
-                  <img src="/cert3.jpg" alt="AI Fluency for Educators" />
+                  <img src="/AI Fluency for Educators.png" alt="AI Fluency for Educators" />
                 </div>
                 <div className="certificate-content">
                   <h3 className="certificate-title">AI Fluency for Educators</h3>
                   <p className="certificate-issuer">ANTHROPIC</p>
                   <p className="certificate-date">2026</p>
+                  <p className="certificate-description">Specialized training for integrating AI tools into educational practices and curriculum.</p>
                 </div>
               </div>
 
               {/* Certificate 4 */}
-              <div className="certificate-card">
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/AI Fluency for Non Profits.png',
+                title: 'AI Fluency for Nonprofits',
+                issuer: 'ANTHROPIC & GIVINGTUESDAY',
+                date: '2026',
+                description: 'Focused training on leveraging AI technologies for nonprofit organizations and social impact initiatives. Learned how to use AI for fundraising, donor engagement, program optimization, and operational efficiency. Explored ethical AI use in the nonprofit sector and strategies for maximizing social impact with limited resources.',
+                skills: ['Social Impact', 'Nonprofit Management', 'AI Strategy', 'Community Engagement']
+              })}>
                 <div className="certificate-image">
-                  <img src="/cert4.jpg" alt="AI Fluency for Nonprofits" />
+                  <img src="/AI Fluency for Non Profits.png" alt="AI Fluency for Nonprofits" />
                 </div>
                 <div className="certificate-content">
                   <h3 className="certificate-title">AI Fluency for Nonprofits</h3>
                   <p className="certificate-issuer">ANTHROPIC & GIVINGTUESDAY</p>
                   <p className="certificate-date">2026</p>
+                  <p className="certificate-description">Training on using AI for social impact and nonprofit organizational efficiency.</p>
                 </div>
               </div>
 
               {/* Certificate 5 */}
-              <div className="certificate-card">
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/AI Fluency for Students.png',
+                title: 'AI Fluency for Students',
+                issuer: 'ANTHROPIC',
+                date: '2026',
+                description: 'Student-focused program covering AI fundamentals, practical applications for learning and research, and responsible AI usage. Learned how to use AI tools for studying, project work, creative endeavors, and career preparation. Emphasized critical thinking about AI outputs and understanding AI\'s role in future careers.',
+                skills: ['AI Literacy', 'Research Skills', 'Critical Thinking', 'Digital Skills']
+              })}>
                 <div className="certificate-image">
-                  <img src="/cert5.jpg" alt="AI Fluency for Students" />
+                  <img src="/AI Fluency for Students.png" alt="AI Fluency for Students" />
                 </div>
                 <div className="certificate-content">
                   <h3 className="certificate-title">AI Fluency for Students</h3>
                   <p className="certificate-issuer">ANTHROPIC</p>
                   <p className="certificate-date">2026</p>
+                  <p className="certificate-description">Comprehensive AI training for students covering fundamentals and practical applications.</p>
                 </div>
               </div>
 
               {/* Certificate 6 */}
-              <div className="certificate-card">
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/CERTIFICATE.png',
+                title: 'AI Fluency: Framework & Foundations',
+                issuer: 'ANTHROPIC',
+                date: '2026',
+                description: 'Core certification covering the foundational framework of AI fluency. Explored AI concepts, machine learning basics, neural networks, natural language processing, and the broader implications of AI in society. Developed a comprehensive understanding of AI capabilities, limitations, and ethical considerations for responsible AI deployment.',
+                skills: ['AI Fundamentals', 'Machine Learning', 'NLP', 'AI Ethics']
+              })}>
                 <div className="certificate-image">
-                  <img src="/cert6.jpg" alt="AI Fluency: Framework & Foundations" />
+                  <img src="/CERTIFICATE.png" alt="AI Fluency: Framework & Foundations" />
                 </div>
                 <div className="certificate-content">
                   <h3 className="certificate-title">AI Fluency: Framework & Foundations</h3>
                   <p className="certificate-issuer">ANTHROPIC</p>
                   <p className="certificate-date">2026</p>
+                  <p className="certificate-description">Core certification in AI fundamentals, frameworks, and foundational concepts.</p>
                 </div>
               </div>
 
               {/* Certificate 7 */}
-              <div className="certificate-card">
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/Certificate Of Participitation.png',
+                title: 'AI For All - AI Appreciate',
+                issuer: 'Intel & Digital India',
+                date: 'January 12, 2026',
+                description: 'Participated in Intel\'s AI For All initiative in collaboration with Digital India, completing the AI Appreciate stage. This program introduced fundamental AI concepts, explored AI applications across industries, and emphasized India\'s role in the global AI landscape. Gained awareness of AI\'s potential to drive digital transformation and innovation.',
+                skills: ['AI Awareness', 'Digital Transformation', 'Industry Applications', 'Innovation']
+              })}>
                 <div className="certificate-image">
-                  <img src="/cert7.jpg" alt="AI For All - AI Appreciate" />
+                  <img src="/Certificate Of Participitation.png" alt="AI For All - AI Appreciate" />
                 </div>
                 <div className="certificate-content">
                   <h3 className="certificate-title">AI For All - AI Appreciate</h3>
                   <p className="certificate-issuer">Intel & Digital India</p>
                   <p className="certificate-date">January 12, 2026</p>
+                  <p className="certificate-description">Intel's AI awareness program focusing on AI fundamentals and digital transformation.</p>
                 </div>
               </div>
 
               {/* Certificate 8 */}
-              <div className="certificate-card">
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/CERTIFICATE.png',
+                title: 'Yuva AI For ALL - English',
+                issuer: 'AISECT LEARN',
+                date: 'January 21, 2026',
+                description: 'Successfully completed the Yuva AI For ALL program offered by AISECT LEARN, a youth-focused initiative to democratize AI education. This course covered AI basics, practical applications, and career opportunities in the AI field. Designed to empower young learners with essential AI skills for the future job market.',
+                skills: ['AI Basics', 'Youth Empowerment', 'Career Development', 'Future Skills']
+              })}>
                 <div className="certificate-image">
-                  <img src="/cert8.jpg" alt="Yuva AI For ALL - English" />
+                  <img src="/CERTIFICATE.png" alt="Yuva AI For ALL - English" />
                 </div>
                 <div className="certificate-content">
                   <h3 className="certificate-title">Yuva AI For ALL - English</h3>
                   <p className="certificate-issuer">AISECT LEARN</p>
                   <p className="certificate-date">January 21, 2026</p>
+                  <p className="certificate-description">Youth-focused AI education program covering basics and career opportunities.</p>
                 </div>
               </div>
             </div>
@@ -2124,6 +2479,35 @@ export default function Portfolio() {
             {isAtTop ? <span style={{ fontWeight: 900, fontSize: '28px' }}>▼</span> : <span style={{ fontWeight: 900, fontSize: '28px' }}>▲</span>}
           </button>
         </div>
+
+        {/* Certificate Modal */}
+        {selectedCertificate && (
+          <div className="certificate-modal" onClick={() => setSelectedCertificate(null)}>
+            <div className="certificate-modal-content" onClick={(e) => e.stopPropagation()}>
+              <button 
+                className="certificate-modal-close"
+                onClick={() => setSelectedCertificate(null)}
+                aria-label="Close modal"
+              >
+                ×
+              </button>
+              <div className="certificate-modal-image">
+                <img src={selectedCertificate.image} alt={selectedCertificate.title} />
+              </div>
+              <div className="certificate-modal-details">
+                <h2 className="certificate-modal-title">{selectedCertificate.title}</h2>
+                <p className="certificate-modal-issuer">{selectedCertificate.issuer}</p>
+                <p className="certificate-modal-date">{selectedCertificate.date}</p>
+                <p className="certificate-modal-description">{selectedCertificate.description}</p>
+                <div className="certificate-modal-skills">
+                  {selectedCertificate.skills.map((skill, index) => (
+                    <span key={index} className="certificate-skill-tag">{skill}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
