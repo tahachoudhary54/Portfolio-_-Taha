@@ -76,22 +76,23 @@ export default function Portfolio() {
         }
 
         :root {
-          --primary: #0066FF;
-          --secondary: #00F5FF;
-          --dark: #0A0E27;
-          --dark-light: #1A1F3A;
-          --accent: #FF3366;
-          --text: #E8EAED;
-          --text-dim: #9CA3AF;
+          --primary: #6366f1;
+          --secondary: #0ea5e9;
+          --dark: #09090b;
+          --dark-light: #18181b;
+          --accent: #8b5cf6;
+          --text: #f8fafc;
+          --text-dim: #94a3b8;
         }
 
         body {
-          font-family: 'Poppins', sans-serif;
+          font-family: 'Inter', sans-serif;
           background: var(--dark);
           color: var(--text);
           overflow-x: hidden;
           line-height: 1.8;
           font-size: 16px;
+          letter-spacing: -0.015em;
         }
 
         h1, h2, h3, h4, h5, h6, p, span, div, a, button {
@@ -125,10 +126,11 @@ export default function Portfolio() {
         }
 
         .logo {
-          font-family: 'Poppins', sans-serif;
+          font-family: 'Inter', sans-serif;
           font-weight: 800;
           font-size: 1.5rem;
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          letter-spacing: -0.05em;
+          background: linear-gradient(135deg, var(--text), var(--text-dim));
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -208,61 +210,72 @@ export default function Portfolio() {
 
         .hero-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 3rem;
+          grid-template-columns: 1.2fr 0.8fr;
+          gap: 4rem;
           align-items: center;
         }
 
         .hero-image {
           width: 100%;
-          max-width: 500px;
+          max-width: 480px;
           aspect-ratio: 1;
-          background: linear-gradient(135deg, var(--dark-light), rgba(0, 102, 255, 0.1));
-          border-radius: 2rem;
-          border: 2px solid rgba(0, 245, 255, 0.2);
+          background: linear-gradient(135deg, var(--dark-light), transparent);
+          border-radius: 3rem;
+          border: 1px solid rgba(255, 255, 255, 0.05);
           display: flex;
           align-items: center;
           justify-content: center;
           position: relative;
           overflow: hidden;
           margin-left: auto;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
           animation: float 6s ease-in-out infinite;
+          backdrop-filter: blur(20px);
         }
 
         .hero-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          border-radius: 2rem;
+          border-radius: 3rem;
+          transition: all 0.5s ease;
+        }
+        
+        .hero-image:hover img {
+          transform: scale(1.03);
         }
 
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
+          50% { transform: translateY(-15px); }
         }
 
         .hero::before {
           content: '';
           position: absolute;
-          width: 600px;
-          height: 600px;
-          background: radial-gradient(circle, rgba(0, 102, 255, 0.15), transparent 70%);
+          width: 800px;
+          height: 800px;
+          background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent 60%);
           top: -200px;
-          right: -200px;
+          right: -100px;
           border-radius: 50%;
-          animation: pulse 8s ease-in-out infinite;
+          animation: pulse 10s ease-in-out infinite;
+          filter: blur(60px);
+          z-index: 0;
         }
 
         .hero::after {
           content: '';
           position: absolute;
-          width: 400px;
-          height: 400px;
-          background: radial-gradient(circle, rgba(0, 245, 255, 0.1), transparent 70%);
-          bottom: -100px;
-          left: -100px;
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(14, 165, 233, 0.1), transparent 60%);
+          bottom: -200px;
+          left: -200px;
           border-radius: 50%;
-          animation: pulse 6s ease-in-out infinite reverse;
+          animation: pulse 8s ease-in-out infinite reverse;
+          filter: blur(60px);
+          z-index: 0;
         }
 
         @keyframes pulse {
@@ -276,21 +289,29 @@ export default function Portfolio() {
         }
 
         .hero h1 {
-          font-family: 'Poppins', sans-serif;
-          font-size: clamp(2.5rem, 8vw, 6rem);
+          font-family: 'Inter', sans-serif;
+          font-size: clamp(3rem, 7vw, 5.5rem);
           font-weight: 800;
-          line-height: 0.95;
+          line-height: 1.05;
+          letter-spacing: -0.03em;
           margin-bottom: 1.5rem;
           padding-bottom: 0.5rem;
-          animation: slideUp 0.8s ease-out 0.2s both;
+          animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
         }
 
         @keyframes slideUp {
-          from { opacity: 0; transform: translateY(30px); }
+          from { opacity: 0; transform: translateY(40px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
         .hero h1 .gradient-text {
+          background: linear-gradient(135deg, var(--text), var(--text-dim));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        .hero h1 .accent-text {
           background: linear-gradient(135deg, var(--primary), var(--secondary));
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
@@ -298,90 +319,106 @@ export default function Portfolio() {
         }
 
         .hero p {
-          font-size: clamp(1rem, 2.5vw, 1.375rem);
+          font-size: clamp(1.1rem, 2vw, 1.25rem);
           color: var(--text-dim);
-          max-width: 600px;
-          margin-bottom: 2rem;
-          line-height: 1.8;
-          animation: slideUp 0.8s ease-out 0.4s both;
+          max-width: 580px;
+          margin-bottom: 2.5rem;
+          line-height: 1.7;
+          animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
         }
 
         .cta-buttons {
           display: flex;
-          gap: 1rem;
+          gap: 1.25rem;
           flex-wrap: wrap;
-          animation: slideUp 0.8s ease-out 0.6s both;
+          animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
         }
 
         .btn {
-          padding: 0.875rem 2rem;
-          border-radius: 50px;
+          padding: 0.875rem 2.25rem;
+          border-radius: 100px;
           font-weight: 600;
           text-decoration: none;
-          transition: all 0.3s;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
-          border: none;
+          border: 1px solid transparent;
           font-size: 0.95rem;
           text-align: center;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
         }
 
         .btn-primary {
           background: linear-gradient(135deg, var(--primary), var(--secondary));
           color: white;
+          box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
         }
 
         .btn-primary:hover {
           transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
+          box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+          filter: brightness(1.1);
         }
 
         .btn-secondary {
-          background: transparent;
-          border: 2px solid var(--primary);
-          color: var(--primary);
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: var(--text);
+          backdrop-filter: blur(10px);
         }
 
         .btn-secondary:hover {
-          background: var(--primary);
-          color: white;
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.2);
+          transform: translateY(-2px);
         }
 
         section {
-          padding: 5rem 0;
+          padding: 6rem 0;
           position: relative;
         }
 
         .section-header {
-          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
           margin-bottom: 4rem;
+          position: relative;
         }
 
         .section-tag {
-          display: inline-block;
-          padding: 0.5rem 1.5rem;
-          background: rgba(0, 245, 255, 0.1);
-          border-radius: 50px;
-          color: var(--secondary);
-          font-size: 0.875rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1.25rem;
+          background: rgba(99, 102, 241, 0.1);
+          border: 1px solid rgba(99, 102, 241, 0.2);
+          border-radius: 100px;
+          color: var(--primary);
+          font-size: 0.85rem;
           font-weight: 600;
-          margin-bottom: 1rem;
+          margin-bottom: 1.25rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
 
         .section-title {
-          font-family: 'Poppins', sans-serif;
-          font-size: clamp(2rem, 5vw, 4.5rem);
-          font-weight: 700;
+          font-family: 'Inter', sans-serif;
+          font-size: clamp(2.5rem, 5vw, 4rem);
+          font-weight: 800;
+          letter-spacing: -0.03em;
           margin-bottom: 1rem;
-          line-height: 1.3;
-          padding-bottom: 0.5rem;
+          line-height: 1.1;
+          color: var(--text);
         }
 
         .section-subtitle {
           color: var(--text-dim);
-          font-size: clamp(1rem, 2vw, 1.375rem);
+          font-size: clamp(1.05rem, 1.5vw, 1.2rem);
           max-width: 600px;
-          margin: 0 auto;
-          line-height: 1.8;
+          line-height: 1.7;
         }
 
         .about-grid {
@@ -466,9 +503,7 @@ export default function Portfolio() {
           gap: 2rem;
         }
 
-        .skills-grid .skill-card-new:nth-child(10) {
-          grid-column: 2 / 3;
-        }
+
 
         .skill-card-new {
           background: var(--dark-light);
@@ -590,77 +625,101 @@ export default function Portfolio() {
 
         .projects-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 2rem;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 2.5rem;
         }
 
         .project-card {
-          background: var(--dark-light);
+          background: rgba(26, 31, 58, 0.4);
           border-radius: 1.5rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          transition: all 0.3s;
-          cursor: pointer;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          backdrop-filter: blur(10px);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
         }
 
         .project-card:hover {
-          transform: translateY(-10px);
-          border-color: var(--primary);
-          box-shadow: 0 20px 40px rgba(0, 102, 255, 0.2);
+          transform: translateY(-8px);
+          border-color: rgba(99, 102, 241, 0.3);
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(99, 102, 241, 0.1);
+          background: rgba(26, 31, 58, 0.7);
         }
 
         .project-image {
           width: 100%;
-          height: 200px;
-          background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(0, 245, 255, 0.2));
+          height: 220px;
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(14, 165, 233, 0.05));
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 3rem;
           position: relative;
-          border-radius: 1.5rem 1.5rem 0 0;
           overflow: hidden;
+          border-radius: 1.5rem 1.5rem 0 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          transform: translateZ(0); /* Force clipping in Safari */
         }
 
         .project-image img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
+          object-fit: cover;
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .project-card:hover .project-image img {
+          transform: scale(1.08);
         }
 
         .project-content {
-          padding: 1.5rem;
-          padding-bottom: 2rem;
+          padding: 2rem;
+          display: flex;
+          flex-direction: column;
+          flex-grow: 1;
         }
 
         .project-title {
-          font-family: 'Poppins', sans-serif;
-          font-size: clamp(1.25rem, 2vw, 1.75rem);
-          margin-bottom: 1rem;
-          line-height: 1.5;
-          padding-bottom: 0.5rem;
+          font-family: 'Inter', sans-serif;
+          font-size: clamp(1.35rem, 2vw, 1.75rem);
+          font-weight: 700;
+          margin-bottom: 0.75rem;
+          line-height: 1.3;
+          color: white;
+          letter-spacing: -0.01em;
         }
 
         .project-description {
           color: var(--text-dim);
           line-height: 1.8;
           margin-bottom: 1.5rem;
-          font-size: clamp(0.9rem, 1.5vw, 1.0625rem);
+          font-size: 1.05rem;
+          flex-grow: 1;
         }
 
         .project-tags {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.5rem;
-          margin-bottom: 1.5rem;
+          gap: 0.65rem;
+          margin-bottom: 2rem;
         }
 
         .project-tag {
-          padding: 0.35rem 0.875rem;
-          background: rgba(0, 102, 255, 0.1);
-          border: 1px solid rgba(0, 102, 255, 0.3);
-          border-radius: 50px;
-          font-size: 0.75rem;
+          padding: 0.4rem 1rem;
+          background: rgba(99, 102, 241, 0.1);
+          border: 1px solid rgba(99, 102, 241, 0.2);
+          border-radius: 100px;
+          font-size: 0.8rem;
+          font-weight: 500;
           color: var(--secondary);
+          transition: all 0.3s ease;
+        }
+        
+        .project-card:hover .project-tag {
+          background: rgba(99, 102, 241, 0.15);
+          border-color: rgba(99, 102, 241, 0.3);
         }
 
         .project-links {
@@ -671,39 +730,88 @@ export default function Portfolio() {
 
         .project-link {
           padding: 0.75rem 1.5rem;
-          background: transparent;
-          border: 2px solid var(--primary);
-          border-radius: 50px;
-          color: var(--primary);
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 100px;
+          color: var(--text);
           text-decoration: none;
           font-weight: 600;
-          font-size: 0.875rem;
+          font-size: 0.85rem;
           transition: all 0.3s;
           text-align: center;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
         }
 
         .project-link:hover {
           background: var(--primary);
+          border-color: var(--primary);
           color: white;
+          transform: translateY(-2px);
         }
 
-        .education-card {
-          background: var(--dark-light);
-          padding: 2.5rem;
-          border-radius: 1.5rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+        .timeline {
           position: relative;
+          max-width: 900px;
+          margin: 0 auto;
+          padding-left: 2rem;
         }
 
-        .education-card::before {
+        .timeline::before {
           content: '';
           position: absolute;
           top: 0;
+          bottom: 0;
           left: 0;
-          width: 6px;
-          height: 100%;
-          background: linear-gradient(180deg, var(--primary), var(--secondary));
-          border-radius: 1.5rem 0 0 1.5rem;
+          width: 2px;
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        .timeline-item {
+          position: relative;
+          padding-left: 3rem;
+          padding-bottom: 4rem;
+        }
+
+        .timeline-item:last-child {
+          padding-bottom: 0;
+        }
+
+        .timeline-dot {
+          position: absolute;
+          left: -0.4rem;
+          top: 0;
+          width: 20px;
+          height: 20px;
+          background: var(--dark);
+          border: 4px solid var(--primary);
+          border-radius: 50%;
+          box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+          transition: all 0.3s ease;
+          z-index: 10;
+        }
+
+        .timeline-item:hover .timeline-dot {
+          background: var(--primary);
+          box-shadow: 0 0 20px rgba(99, 102, 241, 0.6), 0 0 0 6px rgba(99, 102, 241, 0.2);
+        }
+
+        .education-card {
+          background: rgba(26, 31, 58, 0.5);
+          padding: 2.5rem;
+          border-radius: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(10px);
+          position: relative;
+          transition: all 0.4s ease;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .education-card:hover {
+          transform: translateX(10px);
+          border-color: rgba(99, 102, 241, 0.3);
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
 
         .education-header {
@@ -712,37 +820,41 @@ export default function Portfolio() {
           align-items: flex-start;
           margin-bottom: 1.5rem;
           flex-wrap: wrap;
-          gap: 1rem;
+          gap: 1.5rem;
         }
 
         .education-title {
-          font-family: 'Poppins', sans-serif;
-          font-size: clamp(1.25rem, 2.5vw, 2rem);
+          font-family: 'Inter', sans-serif;
+          font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+          font-weight: 700;
           margin-bottom: 0.5rem;
           line-height: 1.4;
+          color: white;
         }
 
         .education-institution {
           color: var(--secondary);
           font-weight: 600;
-          font-size: clamp(1rem, 2vw, 1.25rem);
+          font-size: clamp(1rem, 1.5vw, 1.15rem);
           line-height: 1.5;
         }
 
         .education-period {
-          padding: 0.5rem 1.5rem;
-          background: rgba(0, 245, 255, 0.1);
-          border-radius: 50px;
+          padding: 0.5rem 1.25rem;
+          background: rgba(14, 165, 233, 0.1);
+          border: 1px solid rgba(14, 165, 233, 0.2);
+          border-radius: 100px;
           color: var(--secondary);
-          font-size: 0.875rem;
+          font-size: 0.85rem;
           font-weight: 600;
           white-space: nowrap;
+          letter-spacing: 0.05em;
         }
 
         .education-description {
           color: var(--text-dim);
           line-height: 1.9;
-          font-size: clamp(0.95rem, 1.5vw, 1.125rem);
+          font-size: 1.05rem;
         }
 
         .certificates-grid {
@@ -753,33 +865,38 @@ export default function Portfolio() {
         }
 
         .certificate-card {
-          background: var(--dark-light);
+          background: rgba(26, 31, 58, 0.4);
           border-radius: 1.5rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          transition: all 0.3s;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           overflow: hidden;
           cursor: pointer;
           display: flex;
           flex-direction: column;
           height: 100%;
+          backdrop-filter: blur(10px);
         }
 
         .certificate-card:hover {
-          transform: translateY(-10px);
-          border-color: var(--primary);
-          box-shadow: 0 20px 40px rgba(0, 102, 255, 0.2);
+          transform: translateY(-8px);
+          border-color: rgba(99, 102, 241, 0.3);
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(99, 102, 241, 0.1);
+          background: rgba(26, 31, 58, 0.7);
         }
 
         .certificate-image {
           width: 100%;
           height: 220px;
-          background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 245, 255, 0.1));
+          background: rgba(255, 255, 255, 0.03);
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
           position: relative;
           flex-shrink: 0;
+          border-radius: 1.5rem 1.5rem 0 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          transform: translateZ(0); /* Force clipping in Safari */
         }
 
         .certificate-image img {
@@ -1413,9 +1530,7 @@ export default function Portfolio() {
             grid-template-columns: repeat(2, 1fr);
           }
 
-          .skills-grid .skill-card-new:nth-child(10) {
-            grid-column: 1 / 2;
-          }
+
         }
 
         /* =============================================
@@ -1488,9 +1603,7 @@ export default function Portfolio() {
             gap: 1.5rem;
           }
 
-          .skills-grid .skill-card-new:nth-child(10) {
-            grid-column: 1 / 2;
-          }
+
 
           .skill-card-new {
             padding: 1.5rem;
@@ -1617,6 +1730,117 @@ export default function Portfolio() {
             font-size: 1.75rem;
           }
         }
+        /* Bento Grid Styles */
+        .about-bento {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 2rem;
+          margin-bottom: 3rem;
+          max-width: 1100px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        
+        .bento-card {
+          background: rgba(26, 31, 58, 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 1.5rem;
+          padding: 2.5rem;
+          backdrop-filter: blur(10px);
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+        
+        .bento-card::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(0, 102, 255, 0.05), rgba(0, 245, 255, 0.05));
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          z-index: 0;
+        }
+        
+        .bento-card:hover {
+          transform: translateY(-8px);
+          border-color: rgba(0, 245, 255, 0.3);
+          box-shadow: 0 15px 35px rgba(0, 102, 255, 0.15);
+          background: rgba(26, 31, 58, 0.8);
+        }
+        
+        .bento-card:hover::before {
+          opacity: 1;
+        }
+        
+        .bento-card > * {
+          position: relative;
+          z-index: 1;
+        }
+        
+        .bento-header {
+          display: flex;
+          align-items: center;
+          gap: 1.25rem;
+        }
+        
+        .bento-icon-wrapper {
+          width: 54px;
+          height: 54px;
+          background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 245, 255, 0.1));
+          border: 1px solid rgba(0, 245, 255, 0.2);
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          color: var(--secondary);
+          transition: all 0.4s ease;
+        }
+        
+        .bento-card:hover .bento-icon-wrapper {
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          color: white;
+          box-shadow: 0 8px 20px rgba(0, 102, 255, 0.4);
+          transform: scale(1.1) rotate(-5deg);
+        }
+        
+        .bento-card h3 {
+          font-size: 1.35rem;
+          font-weight: 600;
+          color: white;
+          margin: 0;
+          letter-spacing: 0.5px;
+        }
+        
+        .bento-card p {
+          margin: 0;
+          color: var(--text-dim);
+          line-height: 1.8;
+          font-size: 1.05rem;
+        }
+        
+        .bento-span-2 {
+          grid-column: span 2;
+        }
+        
+        @media (max-width: 992px) {
+          .about-bento {
+            gap: 1.5rem;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .about-bento {
+            grid-template-columns: 1fr;
+          }
+          .bento-span-2 {
+            grid-column: span 1;
+          }
+        }
       `}</style>
 
       <div>
@@ -1653,7 +1877,7 @@ export default function Portfolio() {
                   Hi, I&apos;m<br /><span className="gradient-text">Taha Choudhary</span>
                 </h1>
                 <p>
-                  Trainee at Nexcore Institute of Technology, mastering AI & ML while building 
+                  Trainee at Nexcore Institute of Technology, mastering AI & DS while building 
                   beautiful web experiences with modern technologies.
                 </p>
                 <div className="cta-buttons">
@@ -1672,54 +1896,59 @@ export default function Portfolio() {
         <section id="about">
           <div className="container">
             <div className="section-header">
-              <div className="section-tag">📖 Get to know me</div>
+              <div className="section-tag"><i className="fa-solid fa-user"></i> Get to know me</div>
               <h2 className="section-title">About Me</h2>
             </div>
-            <div className="about-content" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+            <div className="about-content">
               <h3 style={{ textAlign: 'center', marginBottom: '2.5rem' }}>Building the Future with AI & Web Technologies</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
-                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                    🎓
+              <div className="about-bento">
+                <div className="bento-card">
+                  <div className="bento-header">
+                    <div className="bento-icon-wrapper"><i className="fa-solid fa-graduation-cap"></i></div>
+                    <h3>Education</h3>
                   </div>
-                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                    Currently a trainee at <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>Nexcore Institute of Technology</span>, pursuing an intensive 3-year program in AI & Machine Learning (2025-2028), where I&apos;m building a strong foundation in artificial intelligence, data science, and modern software development practices.
+                  <p>
+                    Currently a trainee at <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>Nexcore Institute of Technology</span>, pursuing an intensive 3-year program in AI & Data Science (2025-2028), where I&apos;m building a strong foundation in artificial intelligence, data science, and modern software development practices.
                   </p>
                 </div>
                 
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
-                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                    💻
+                <div className="bento-card">
+                  <div className="bento-header">
+                    <div className="bento-icon-wrapper"><i className="fa-solid fa-code"></i></div>
+                    <h3>Web Development</h3>
                   </div>
-                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                    Passionate about creating <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>beautiful, functional, and user-centric websites</span> using modern web technologies like React, Next.js, and Tailwind CSS. I focus on building responsive interfaces that provide seamless experiences across all devices.
+                  <p>
+                    Passionate about creating <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>beautiful, user-centric websites</span> using modern web technologies like React, Next.js, and Tailwind CSS.
                   </p>
                 </div>
                 
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
-                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                    🚀
+                <div className="bento-card">
+                  <div className="bento-header">
+                    <div className="bento-icon-wrapper"><i className="fa-solid fa-rocket"></i></div>
+                    <h3>Learning by Doing</h3>
                   </div>
-                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                    Strong believer in <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>learning by doing</span> - I constantly work on real-world projects that merge web development with AI capabilities, exploring how machine learning can enhance user experiences and solve practical problems.
+                  <p>
+                    I constantly work on real-world projects that merge web development with AI capabilities to solve practical problems.
                   </p>
                 </div>
                 
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
-                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                    🎨
+                <div className="bento-card">
+                  <div className="bento-header">
+                    <div className="bento-icon-wrapper"><i className="fa-solid fa-pen-nib"></i></div>
+                    <h3>UI/UX Design</h3>
                   </div>
-                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                    Skilled in <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>UI/UX design with Figma</span>, I bridge the gap between design and development by creating intuitive interfaces and then bringing them to life with clean, maintainable code. I believe great products start with great design.
+                  <p>
+                    Skilled in <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>Figma</span>, I bridge the gap between design and development by creating intuitive interfaces.
                   </p>
                 </div>
                 
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'start' }}>
-                  <div style={{ minWidth: '40px', height: '40px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                    🌐
+                <div className="bento-card bento-span-2">
+                  <div className="bento-header" style={{ justifyContent: 'center' }}>
+                    <div className="bento-icon-wrapper"><i className="fa-solid fa-layer-group"></i></div>
+                    <h3>Full-Stack</h3>
                   </div>
-                  <p style={{ margin: 0, paddingTop: '0.5rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                    Experienced with <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>full-stack development</span>, working with both frontend technologies (HTML, CSS, JavaScript, React) and backend frameworks (Express.js), along with CMS platforms like WordPress for rapid website deployment and customization.
+                  <p style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
+                    Experienced with <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>frontend and backend</span> frameworks, along with CMS platforms like WordPress for rapid deployment.
                   </p>
                 </div>
               </div>
@@ -1745,7 +1974,7 @@ export default function Portfolio() {
         <section id="skills">
           <div className="container">
             <div className="section-header">
-              <div className="section-tag">💻 What I know</div>
+              <div className="section-tag"><i className="fa-solid fa-laptop-code"></i> What I know</div>
               <h2 className="section-title">My Skills</h2>
               <p className="section-subtitle">
                 Technologies and tools I&apos;m proficient in and continuously learning
@@ -2008,6 +2237,52 @@ export default function Portfolio() {
                   <span className="skill-level" style={{ background: 'linear-gradient(135deg, #21759B, #23A8D8)', color: 'white' }}>Advanced</span>
                 </div>
               </div>
+
+              {/* MySQL Card */}
+              <div className="skill-card-new">
+                <div className="skill-icon-container" style={{ background: 'rgba(68, 121, 161, 0.1)' }}>
+                  <div className="skill-icon" style={{ background: 'white', padding: '10px' }}>
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="MySQL" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  </div>
+                </div>
+                <h3 className="skill-title">MySQL</h3>
+                <p className="skill-category">DATABASE</p>
+                <p className="skill-description">Relational database management</p>
+                <div className="skill-proficiency">
+                  <span className="proficiency-label">Proficiency</span>
+                  <span className="proficiency-value" style={{ color: '#4479A1' }}>75%</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: '75%', background: 'linear-gradient(90deg, #4479A1, #00758F)' }}></div>
+                </div>
+                <div className="skill-footer">
+                  <span className="skill-duration">⏱ 4 Months</span>
+                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #4479A1, #00758F)', color: 'white' }}>Intermediate</span>
+                </div>
+              </div>
+
+              {/* Microsoft Excel Card */}
+              <div className="skill-card-new">
+                <div className="skill-icon-container" style={{ background: 'rgba(33, 115, 70, 0.1)' }}>
+                  <div className="skill-icon" style={{ background: 'white', padding: '10px' }}>
+                    <img src="https://img.icons8.com/color/512/ms-excel.png" alt="Microsoft Excel" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  </div>
+                </div>
+                <h3 className="skill-title">Microsoft Excel</h3>
+                <p className="skill-category">DATA ANALYSIS</p>
+                <p className="skill-description">Spreadsheets & data management</p>
+                <div className="skill-proficiency">
+                  <span className="proficiency-label">Proficiency</span>
+                  <span className="proficiency-value" style={{ color: '#217346' }}>85%</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: '85%', background: 'linear-gradient(90deg, #217346, #107C41)' }}></div>
+                </div>
+                <div className="skill-footer">
+                  <span className="skill-duration">⏱ 6 Months</span>
+                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #217346, #107C41)', color: 'white' }}>Advanced</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -2016,7 +2291,7 @@ export default function Portfolio() {
         <section id="projects">
           <div className="container">
             <div className="section-header">
-              <div className="section-tag">🚀 What I&apos;ve built</div>
+              <div className="section-tag"><i className="fa-solid fa-briefcase"></i> What I&apos;ve built</div>
               <h2 className="section-title">My Projects</h2>
               <p className="section-subtitle">
                 A collection of my recent work and side projects
@@ -2041,7 +2316,7 @@ export default function Portfolio() {
                     <span className="project-tag">Responsive</span>
                   </div>
                   <div className="project-links">
-                    <Link href="/https://wanderlust-nu-dusky.vercel.app/ " target="_blank" rel="noopener noreferrer" className="project-link">View Project</Link>
+                    <a href="/Wanderlust.html" target="_blank" rel="noopener noreferrer" className="project-link">View Project</a>
                   </div>
                 </div>
               </div>
@@ -2071,21 +2346,20 @@ export default function Portfolio() {
               {/* Project 3 */}
               <div className="project-card">
                 <div className="project-image" style={{ padding: 0 }}>
-                  <img src="/book.png" alt="BookMyShow Clone" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '1.5rem 1.5rem 0 0' }} />
+                  <img src="/downtown.png" alt="Downtown Boutique" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '1.5rem 1.5rem 0 0' }} />
                 </div>
                 <div className="project-content">
-                  <h3 className="project-title">BookMyShow Clone</h3>
+                  <h3 className="project-title">Downtown Boutique</h3>
                   <p className="project-description">
-                    A movie ticket booking platform clone featuring responsive design, 
-                    event listings, and modern UI/UX principles with Tailwind CSS.
+                    A premium modern luxury menswear boutique website. Features a sleek, sophisticated UI designed for discerning individuals seeking everyday style and comfort.
                   </p>
                   <div className="project-tags">
-                    <span className="project-tag">HTML</span>
-                    <span className="project-tag">Tailwind CSS</span>
-                    <span className="project-tag">Responsive</span>
+                    <span className="project-tag">Next.js</span>
+                    <span className="project-tag">React</span>
+                    <span className="project-tag">MongoDB</span>
                   </div>
                   <div className="project-links">
-                    <Link href="BookMyShow.html" target="_blank" rel="noopener noreferrer" className="project-link">View Project</Link>
+                    <a href="https://downtownboutique.in/" target="_blank" rel="noopener noreferrer" className="project-link">View Project</a>
                   </div>
                 </div>
               </div>
@@ -2097,52 +2371,58 @@ export default function Portfolio() {
         <section id="education">
           <div className="container">
             <div className="section-header">
-              <div className="section-tag">🎓 Learning journey</div>
+              <div className="section-tag"><i className="fa-solid fa-graduation-cap"></i> Learning journey</div>
               <h2 className="section-title">Education</h2>
             </div>
-            
-            {/* HSC Education Card */}
-            <div className="education-card" style={{ marginBottom: '2rem' }}>
-              <div className="education-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-                  <div style={{ width: '70px', height: '70px', background: 'white', borderRadius: '0.75rem', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <img src="./clg.png" alt="Marceline College" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <div className="timeline">
+              {/* AI ML Training Card */}
+              <div className="timeline-item">
+                <div className="timeline-dot"></div>
+                <div className="education-card">
+                  <div className="education-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                      <div style={{ width: '64px', height: '64px', background: 'rgba(255,255,255,0.03)', borderRadius: '1rem', padding: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <img src="/NIT.png" alt="Nexcore Institute" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      </div>
+                      <div>
+                        <h3 className="education-title">AI & Data Science Training</h3>
+                        <div className="education-institution">Nexcore Institute of Technology</div>
+                      </div>
+                    </div>
+                    <div className="education-period">2025 - 2028</div>
                   </div>
-                  <div>
-                    <h3 className="education-title">Higher Secondary Certificate (HSC)</h3>
-                    <div className="education-institution">Marceline Junior College</div>
-                  </div>
+                  <p className="education-description">
+                    Comprehensive training program focused on Artificial Intelligence and Data Science. 
+                    The curriculum covers fundamental concepts, practical applications, and hands-on projects 
+                    in AI/DS technologies. Alongside AI/DS, I&apos;ve been building a strong foundation in modern 
+                    web development technologies including React, Next.js, Tailwind CSS, and Figma for design.
+                  </p>
                 </div>
-                <div className="education-period">2023-2024</div>
               </div>
-              <p className="education-description">
-                Completed Higher Secondary Certificate (12th grade) with a focus on Commerce stream. 
-                This foundation provided essential knowledge in business, economics, and analytical thinking, 
-                which complements my technical skills in web development and AI/ML.
-              </p>
-            </div>
 
-            {/* AI ML Training Card */}
-            <div className="education-card">
-              <div className="education-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-                  <div style={{ width: '70px', height: '70px', background: 'white', borderRadius: '0.75rem', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <img src="/NIT.png" alt="Nexcore Institute" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              {/* HSC Education Card */}
+              <div className="timeline-item">
+                <div className="timeline-dot"></div>
+                <div className="education-card">
+                  <div className="education-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                      <div style={{ width: '64px', height: '64px', background: 'rgba(255,255,255,0.03)', borderRadius: '1rem', padding: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <img src="./clg.png" alt="Marceline College" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      </div>
+                      <div>
+                        <h3 className="education-title">Higher Secondary Certificate (HSC)</h3>
+                        <div className="education-institution">Marceline Junior College</div>
+                      </div>
+                    </div>
+                    <div className="education-period">2023 - 2024</div>
                   </div>
-                  <div>
-                    <h3 className="education-title">AI & Machine Learning Training</h3>
-                    <div className="education-institution">Nexcore Institute of Technology</div>
-                  </div>
+                  <p className="education-description">
+                    Completed Higher Secondary Certificate (12th grade) with a focus on Commerce stream. 
+                    This foundation provided essential knowledge in business, economics, and analytical thinking, 
+                    which complements my technical skills in full-stack development and artificial intelligence.
+                  </p>
                 </div>
-                <div className="education-period">2025 - 2028</div>
               </div>
-              <p className="education-description">
-                Comprehensive training program focused on Artificial Intelligence and Machine Learning. 
-                The curriculum covers fundamental concepts, practical applications, and hands-on projects 
-                in AI/ML technologies. Alongside AI/ML, I&apos;ve been building a strong foundation in web 
-                development technologies including HTML, CSS, Tailwind CSS, JavaScript, Figma for design, 
-                and WordPress for content management.
-              </p>
             </div>
           </div>
         </section>
@@ -2151,7 +2431,7 @@ export default function Portfolio() {
         <section id="certificates">
           <div className="container">
             <div className="section-header">
-              <div className="section-tag">🏆 Achievements</div>
+              <div className="section-tag"><i className="fa-solid fa-certificate"></i> Achievements</div>
               <h2 className="section-title">Certificates</h2>
               <p className="section-subtitle">
                 Professional certifications and course completions
@@ -2325,7 +2605,7 @@ export default function Portfolio() {
         <section id="contact">
           <div className="container">
             <div className="section-header">
-              <div className="section-tag">📧 Let&apos;s connect</div>
+              <div className="section-tag"><i className="fa-solid fa-envelope"></i> Let&apos;s connect</div>
               <h2 className="section-title">Get In Touch</h2>
             </div>
             <div className="contact-info">

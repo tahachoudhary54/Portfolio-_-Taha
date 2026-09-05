@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wanderlust Travels</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+<!-- MOBILE MENU TOGGLE -->
+<input type="checkbox" id="mobile-menu" class="hidden peer" />
+
+<!-- HEADER -->
+<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
+  <nav class="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-4">
+    <h1 class="text-xl sm:text-2xl font-bold text-blue-600">Wanderlust</h1>
+
+    <!-- Desktop Menu -->
+    <ul class="hidden md:flex gap-6 lg:gap-8 font-medium">
+      <li class="hover:text-blue-600 transition cursor-pointer">Destinations</li>
+      <li class="hover:text-blue-600 transition cursor-pointer">Testimonials</li>
+      <li class="hover:text-blue-600 transition cursor-pointer">Contact</li>
+    </ul>
+
+    <!-- Desktop CTA Button -->
+    <button class="hidden md:block bg-blue-600 text-white px-4 lg:px-6 py-2 rounded-full hover:bg-blue-700 transition shadow text-sm lg:text-base">
+      Book Now
+    </button>
+
+    <!-- Mobile Menu Button -->
+    <label for="mobile-menu" class="md:hidden cursor-pointer">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path class="peer-checked:hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        <path class="hidden peer-checked:block" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </label>
+  </nav>
+
+  <!-- Mobile Dropdown Menu -->
+  <div class="hidden peer-checked:block md:hidden bg-white border-t border-gray-200">
+    <ul class="flex flex-col py-4 px-6 space-y-4 font-medium">
+      <li class="hover:text-blue-600 transition cursor-pointer">Destinations</li>
+      <li class="hover:text-blue-600 transition cursor-pointer">Testimonials</li>
+      <li class="hover:text-blue-600 transition cursor-pointer">Contact</li>
+      <li>
+        <button class="w-full bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition shadow">
+          Book Now
+        </button>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<!-- HERO SECTION -->
+<section class="relative h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-[90vh] bg-cover bg-center"
+  style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e');">
+
+  <div class="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30"></div>
+
+  <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 sm:px-6">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-3 sm:mb-4 leading-tight">
+      Discover Your Next Adventure
+    </h1>
+
+    <p class="text-sm sm:text-base md:text-lg text-gray-200 max-w-xl lg:max-w-2xl mb-6 sm:mb-8 px-4">
+      Explore the world's most breathtaking destinations with Wanderlust Travels
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4">
+      <button class="px-6 sm:px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base rounded-full shadow-lg transition">
+        Explore Destinations
+      </button>
+      <button class="px-6 sm:px-8 py-3 bg-white/20 hover:bg-white/30 text-white text-sm sm:text-base rounded-full backdrop-blur transition">
+        Contact Us
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- POPULAR DESTINATIONS -->
+<section class="py-12 sm:py-16 md:py-20 bg-gray-100">
+  <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-10 md:mb-12 px-4">Popular Destinations</h2>
+
+  <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-6">
+
+    <!-- Card 1 -->
+    <div class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition">
+      <div class="overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34"
+          alt="Maldives"
+          class="h-48 sm:h-56 w-full object-cover group-hover:scale-110 transition duration-500">
+      </div>
+      <div class="p-5 sm:p-6">
+        <h3 class="text-lg sm:text-xl font-semibold mb-2">Maldives</h3>
+        <p class="text-sm sm:text-base text-gray-600 mb-4">
+          Crystal clear waters and luxury overwater villas.
+        </p>
+        <span class="text-blue-600 text-sm sm:text-base font-semibold hover:underline cursor-pointer">
+          View Package →
+        </span>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition">
+      <div class="overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1508057198894-247b23fe5ade"
+          alt="Paris, France"
+          class="h-48 sm:h-56 w-full object-cover group-hover:scale-110 transition duration-500">
+      </div>
+      <div class="p-5 sm:p-6">
+        <h3 class="text-lg sm:text-xl font-semibold mb-2">Paris, France</h3>
+        <p class="text-sm sm:text-base text-gray-600 mb-4">
+          The city of love, lights, art, and romance.
+        </p>
+        <span class="text-blue-600 text-sm sm:text-base font-semibold hover:underline cursor-pointer">
+          View Package →
+        </span>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition">
+      <div class="overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+          alt="Turkey"
+          class="h-48 sm:h-56 w-full object-cover group-hover:scale-110 transition duration-500">
+      </div>
+      <div class="p-5 sm:p-6">
+        <h3 class="text-lg sm:text-xl font-semibold mb-2">Turkey</h3>
+        <p class="text-sm sm:text-base text-gray-600 mb-4">
+          A blend of tradition, culture, and modern beauty.
+        </p>
+        <span class="text-blue-600 text-sm sm:text-base font-semibold hover:underline cursor-pointer">
+          View Package →
+        </span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="py-12 sm:py-16 md:py-20 bg-white">
+  <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-10 md:mb-12 px-4">What Our Travelers Say</h2>
+
+  <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-6">
+
+    <!-- Testimonial 1 -->
+    <div class="bg-gray-50 p-5 sm:p-6 rounded-2xl shadow hover:shadow-lg transition">
+      <div class="text-yellow-400 mb-3 text-lg sm:text-xl">★★★★★</div>
+      <p class="italic text-sm sm:text-base text-gray-600 mb-6">
+        "Wanderlust made our honeymoon unforgettable and stress-free."
+      </p>
+      <div class="flex items-center gap-3 sm:gap-4">
+        <img src="https://randomuser.me/api/portraits/women/44.jpg"
+          alt="Sarah Johnson"
+          class="w-10 h-10 sm:w-12 sm:h-12 rounded-full">
+        <h4 class="font-semibold text-sm sm:text-base">Sarah Johnson</h4>
+      </div>
+    </div>
+
+    <!-- Testimonial 2 -->
+    <div class="bg-gray-50 p-5 sm:p-6 rounded-2xl shadow hover:shadow-lg transition">
+      <div class="text-yellow-400 mb-3 text-lg sm:text-xl">★★★★★</div>
+      <p class="italic text-sm sm:text-base text-gray-600 mb-6">
+        "The Paris package was magical and very affordable!"
+      </p>
+      <div class="flex items-center gap-3 sm:gap-4">
+        <img src="https://randomuser.me/api/portraits/women/45.jpg"
+          alt="Sofia"
+          class="w-10 h-10 sm:w-12 sm:h-12 rounded-full">
+        <h4 class="font-semibold text-sm sm:text-base">Sofia</h4>
+      </div>
+    </div>
+
+    <!-- Testimonial 3 -->
+    <div class="bg-gray-50 p-5 sm:p-6 rounded-2xl shadow hover:shadow-lg transition sm:col-span-2 lg:col-span-1">
+      <div class="text-yellow-400 mb-3 text-lg sm:text-xl">★★★★★</div>
+      <p class="italic text-sm sm:text-base text-gray-600 mb-6">
+        "We always dreamed of Turkey—Wanderlust made it simple."
+      </p>
+      <div class="flex items-center gap-3 sm:gap-4">
+        <img src="https://randomuser.me/api/portraits/women/46.jpg"
+          alt="Sarah"
+          class="w-10 h-10 sm:w-12 sm:h-12 rounded-full">
+        <h4 class="font-semibold text-sm sm:text-base">Sarah</h4>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-gray-300 pt-12 sm:pt-16 pb-6 sm:pb-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
+
+    <!-- Brand Section -->
+    <div class="sm:col-span-2 lg:col-span-1">
+      <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">Wanderlust</h2>
+      <p class="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6">
+        Discover the world with comfort, style, and unforgettable memories.
+      </p>
+
+      <div class="flex gap-3 sm:gap-4">
+        <a href="#" class="w-9 h-9 sm:w-10 sm:h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition text-sm sm:text-base">🌐</a>
+        <a href="#" class="w-9 h-9 sm:w-10 sm:h-10 bg-pink-600 rounded-full flex items-center justify-center hover:bg-pink-700 transition text-sm sm:text-base">📸</a>
+        <a href="#" class="w-9 h-9 sm:w-10 sm:h-10 bg-sky-500 rounded-full flex items-center justify-center hover:bg-sky-600 transition text-sm sm:text-base">🐦</a>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div>
+      <h3 class="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">Quick Links</h3>
+      <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base">
+        <li><a href="#" class="hover:text-white transition">Home</a></li>
+        <li><a href="#" class="hover:text-white transition">Destinations</a></li>
+        <li><a href="#" class="hover:text-white transition">Testimonials</a></li>
+        <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
+        <li><a href="#" class="hover:text-white transition">Book Now</a></li>
+      </ul>
+    </div>
+
+    <!-- Top Destinations -->
+    <div>
+      <h3 class="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">Top Destinations</h3>
+      <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base">
+        <li class="hover:text-white transition cursor-pointer">Maldives</li>
+        <li class="hover:text-white transition cursor-pointer">Paris</li>
+        <li class="hover:text-white transition cursor-pointer">Turkey</li>
+        <li class="hover:text-white transition cursor-pointer">Dubai</li>
+        <li class="hover:text-white transition cursor-pointer">Switzerland</li>
+      </ul>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="sm:col-span-2 lg:col-span-1">
+      <h3 class="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">Newsletter</h3>
+      <p class="text-sm sm:text-base text-gray-400 mb-3 sm:mb-4">
+        Subscribe to get special offers and travel updates.
+      </p>
+
+      <form class="flex flex-col sm:flex-row">
+        <input type="email"
+          placeholder="Your email"
+          class="w-full px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-l-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-sm sm:text-base mb-2 sm:mb-0">
+        <button
+          class="bg-blue-600 px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-l-none sm:rounded-r-lg hover:bg-blue-700 transition text-white text-sm sm:text-base whitespace-nowrap">
+          Subscribe
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="border-t border-gray-700 mt-8 sm:mt-12 pt-4 sm:pt-6 text-center text-gray-400 text-xs sm:text-sm px-4">
+    © 2026 Wanderlust Travels. All rights reserved. | Privacy Policy | Terms & Conditions
+  </div>
+</footer>
+
+</body>
+</html>
