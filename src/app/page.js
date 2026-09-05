@@ -8,41 +8,84 @@ export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
   const [selectedCertificate, setSelectedCertificate] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [pinchStartDist, setPinchStartDist] = useState(0);
+  const [pinchStartZoom, setPinchStartZoom] = useState(1);
+  const [isPinching, setIsPinching] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    
-    // Add fonts to document
     const link1 = document.createElement('link');
     link1.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap';
     link1.rel = 'stylesheet';
     document.head.appendChild(link1);
-
     const link2 = document.createElement('link');
     link2.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
     link2.rel = 'stylesheet';
     document.head.appendChild(link2);
-
-    // Close menu when clicking outside
     const handleClickOutside = (e) => {
       if (!e.target.closest('.menu-toggle') && !e.target.closest('.nav-links')) {
         setMenuActive(false);
       }
     };
-
-    // Track scroll position
-    const handleScroll = () => {
-      setIsAtTop(window.scrollY < 100);
-    };
-
+    const handleScroll = () => { setIsAtTop(window.scrollY < 100); };
     document.addEventListener('click', handleClickOutside);
     window.addEventListener('scroll', handleScroll);
-    
     return () => {
       document.removeEventListener('click', handleClickOutside);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (selectedCertificate) {
+      document.body.style.overflow = 'hidden';
+      setZoomLevel(1);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedCertificate]);
+
+  // Scroll-wheel zoom (desktop)
+  const handleWheelZoom = (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.15 : -0.15;
+    setZoomLevel(z => Math.min(Math.max(z + delta, 0.5), 5));
+  };
+
+  // Pinch-to-zoom (touch)
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      setIsPinching(true);
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      setPinchStartDist(dist);
+      setPinchStartZoom(zoomLevel);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scale = dist / (pinchStartDist || 1);
+      setZoomLevel(Math.min(Math.max(pinchStartZoom * scale, 0.5), 5));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsPinching(false);
+  };
+
+  // Double-tap to reset zoom
+  const handleDoubleClick = () => setZoomLevel(1);
 
   const handleNavClick = () => {
     setMenuActive(false);
@@ -903,6 +946,7 @@ export default function Portfolio() {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          border-radius: 1.5rem 1.5rem 0 0;
           transition: transform 0.3s;
         }
 
@@ -959,6 +1003,7 @@ export default function Portfolio() {
           justify-content: center;
           z-index: 10000;
           padding: 2rem;
+          overflow: hidden;
           animation: fadeIn 0.3s ease;
           backdrop-filter: blur(5px);
         }
@@ -971,16 +1016,16 @@ export default function Portfolio() {
         .certificate-modal-content {
           background: var(--dark-light);
           border-radius: 2rem;
-          max-width: 1100px;
+          max-width: 900px;
           width: 100%;
           max-height: 90vh;
-          overflow: hidden;
+          overflow-y: auto !important;
           position: relative;
           border: 1px solid rgba(0, 102, 255, 0.2);
           box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
           animation: slideUp 0.4s ease;
-          display: grid;
-          grid-template-rows: auto 1fr;
+          display: flex;
+          flex-direction: column;
         }
 
         .certificate-modal-close {
@@ -1012,31 +1057,42 @@ export default function Portfolio() {
 
         .certificate-modal-image {
           width: 100%;
-          min-height: 50vh;
-          max-height: 55vh;
-          background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 102, 255, 0.05));
+          flex-shrink: 0;
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 102, 255, 0.05));
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 3rem;
+          padding: 0;
           border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          position: relative;
         }
 
-        .certificate-modal-image img {
-          max-width: 100%;
-          max-height: 100%;
-          object-fit: contain;
+        .certificate-modal-image-scroll {
+          width: 100%;
+          overflow: auto !important;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1.5rem;
+          cursor: zoom-in;
+          touch-action: none;
+        }
+
+        .certificate-modal-image-scroll img {
           display: block;
           border-radius: 0.5rem;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+          transform-origin: center center;
+          max-width: 100%;
+          height: auto;
         }
 
         .certificate-modal-details {
-          padding: 2.5rem 3rem;
-          overflow-y: auto;
+          padding: 2rem 2.5rem 2.5rem;
           display: flex;
           flex-direction: column;
           gap: 1.25rem;
+          flex-shrink: 0;
         }
 
         .certificate-modal-details::-webkit-scrollbar {
@@ -1124,9 +1180,11 @@ export default function Portfolio() {
           }
 
           .certificate-modal-image {
-            min-height: 40vh;
-            max-height: 45vh;
-            padding: 2rem;
+            padding: 1.5rem;
+          }
+
+          .certificate-modal-image img {
+            max-height: 35vh;
           }
 
           .certificate-modal-details {
@@ -1174,9 +1232,11 @@ export default function Portfolio() {
           }
 
           .certificate-modal-image {
-            min-height: 35vh;
-            max-height: 40vh;
-            padding: 1.5rem;
+            padding: 1rem;
+          }
+
+          .certificate-modal-image img {
+            max-height: 30vh;
           }
 
           .certificate-modal-details {
@@ -2597,6 +2657,66 @@ export default function Portfolio() {
                   <p className="certificate-description">Youth-focused AI education program covering basics and career opportunities.</p>
                 </div>
               </div>
+
+              {/* Certificate 9 - Attendance Excellence Award */}
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/certificates/attendance-excellence-award.png',
+                title: 'Certificate of Attendance Excellent Award',
+                issuer: 'NEXCORE INSTITUTE OF TECHNOLOGY',
+                date: 'June 06, 2026',
+                description: 'Awarded for achieving the highest attendance in the First Year of AI & Data Science at Nexcore Institute of Technology. This certificate recognizes outstanding punctuality, dedication, discipline, and consistent presence throughout the entire academic year — reflecting sincerity, responsibility, and a positive attitude towards learning.',
+                skills: ['Discipline', 'Punctuality', 'AI & Data Science', 'First Year']
+              })}>
+                <div className="certificate-image">
+                  <img src="/certificates/attendance-excellence-award.png" alt="Certificate of Attendance Excellent Award" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">Certificate of Attendance Excellent Award</h3>
+                  <p className="certificate-issuer">NEXCORE INSTITUTE OF TECHNOLOGY</p>
+                  <p className="certificate-date">June 06, 2026</p>
+                  <p className="certificate-description">Awarded for highest attendance in First Year AI & Data Science, recognizing dedication and punctuality.</p>
+                </div>
+              </div>
+
+              {/* Certificate 10 - Certificate of Innovation Hackathon */}
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/certificates/certificate-of-innovation-hackathon.png',
+                title: 'Certificate of Innovation — NIT-CoDeX Hackathon',
+                issuer: 'NEXCORE INSTITUTE OF TECHNOLOGY',
+                date: 'May 23, 2026',
+                description: 'Received the prestigious "Idea to Impact Award" at the NIT-CoDeX Hackathon 2026 Season 1 for outstanding creativity and innovation. Awarded to Team Errorists (Mohd Taha Choudhary) for demonstrating exceptional ability to turn ideas into impactful solutions through strong problem-solving skills and creative thinking during the first-ever hackathon.',
+                skills: ['Innovation', 'Problem Solving', 'Hackathon', 'Creative Thinking']
+              })}>
+                <div className="certificate-image">
+                  <img src="/certificates/certificate-of-innovation-hackathon.png" alt="Certificate of Innovation — NIT-CoDeX Hackathon" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">Certificate of Innovation — NIT-CoDeX Hackathon</h3>
+                  <p className="certificate-issuer">NEXCORE INSTITUTE OF TECHNOLOGY</p>
+                  <p className="certificate-date">May 23, 2026</p>
+                  <p className="certificate-description">Received the "Idea to Impact Award" at NIT-CoDeX Hackathon 2026 for outstanding innovation with Team Errorists.</p>
+                </div>
+              </div>
+
+              {/* Certificate 11 - Shark Tank AIKTC Participation */}
+              <div className="certificate-card" onClick={() => setSelectedCertificate({
+                image: '/certificates/shark-tank-participation.png',
+                title: 'Certificate of Participation — Shark Tank AIKTC',
+                issuer: "ANJUMAN-I-ISLAM'S KALSEKAR TECHNICAL CAMPUS",
+                date: 'August 21–22, 2026',
+                description: "Participated in Shark Tank AIKTC 2026, organized by E-Cell AIKTC in collaboration with the Kalsekar Incubation Centre, held at Anjuman-I-Islam's Kalsekar Technical Campus on 21st and 22nd August 2026. Recognized for active participation, valuable contribution, and enthusiastic support as part of Team X Factors (Taha Choudhary).",
+                skills: ['Entrepreneurship', 'Startup Pitch', 'Innovation', 'E-Cell']
+              })}>
+                <div className="certificate-image">
+                  <img src="/certificates/shark-tank-participation.png" alt="Certificate of Participation — Shark Tank AIKTC" />
+                </div>
+                <div className="certificate-content">
+                  <h3 className="certificate-title">Certificate of Participation — Shark Tank AIKTC</h3>
+                  <p className="certificate-issuer">ANJUMAN-I-ISLAM&apos;S KALSEKAR TECHNICAL CAMPUS</p>
+                  <p className="certificate-date">August 21–22, 2026</p>
+                  <p className="certificate-description">Participated in Shark Tank AIKTC 2026 with Team X Factors, organized by E-Cell AIKTC and Kalsekar Incubation Centre.</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -2615,34 +2735,34 @@ export default function Portfolio() {
                 Whether you have a question or just want to say hi, feel free to reach out!
               </p>
               <div className="contact-methods">
-                <div className="contact-item">
+                <Link href="mailto:tahachoudhary54@gmail.com" className="contact-item" style={{ textDecoration: 'none', cursor: 'pointer' }}>
                   <div className="contact-icon" style={{ background: 'white', padding: '0.5rem' }}>
-                    <img src="mail.jpg" alt="Email" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img src="/mail.jpg" alt="Email" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
                   <div className="contact-item-content">
                     <h4>Email</h4>
-                    <p><Link href="mailto:tahachoudhary54@gmail.com">tahachoudhary54@gmail.com</Link></p>
+                    <p>tahachoudhary54@gmail.com</p>
                   </div>
-                </div>
-                <div className="contact-item">
+                </Link>
+                <Link href="https://www.linkedin.com/in/taha-choudhary-3aa283358" target="_blank" rel="noopener noreferrer" className="contact-item" style={{ textDecoration: 'none', cursor: 'pointer' }}>
                   <div className="contact-icon" style={{ background: 'white', padding: '0.5rem' }}>
-                    <img src="LinkedIn.jpg" alt="LinkedIn" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img src="/LinkedIn.jpg" alt="LinkedIn" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
                   <div className="contact-item-content">
                     <h4>LinkedIn</h4>
-                    <p><Link href="https://www.linkedin.com/in/taha-choudhary-3aa283358" target="_blank" rel="noopener noreferrer">linkedin.com/in/taha-choudhary</Link></p>
+                    <p>linkedin.com/in/taha-choudhary</p>
                   </div>
-                </div>
-                <div className="contact-item">
+                </Link>
+                <Link href="https://github.com/tahachoudhary54" target="_blank" rel="noopener noreferrer" className="contact-item" style={{ textDecoration: 'none', cursor: 'pointer' }}>
                   <div className="contact-icon" style={{ background: 'white', padding: '0.5rem' }}>
-                    <img src="GitHub.jpg" alt="GitHub" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img src="/GitHub.jpg" alt="GitHub" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
                   <div className="contact-item-content">
                     <h4>GitHub</h4>
-                    <p><Link href="https://github.com/tahachoudhary54" target="_blank" rel="noopener noreferrer">github.com/tahachoudhary54</Link></p>
+                    <p>github.com/tahachoudhary54</p>
                   </div>
-                </div>
-                <div className="contact-item">
+                </Link>
+                <Link href="https://www.instagram.com/taha_choudhary_19/" target="_blank" rel="noopener noreferrer" className="contact-item" style={{ textDecoration: 'none', cursor: 'pointer' }}>
                   <div className="contact-icon" style={{ background: 'linear-gradient(135deg, #E1306C, #C13584, #833AB4, #5851DB, #405DE6)', padding: '0.5rem' }}>
                     <svg viewBox="0 0 24 24" fill="white" style={{ width: '100%', height: '100%' }}>
                       <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
@@ -2650,9 +2770,9 @@ export default function Portfolio() {
                   </div>
                   <div className="contact-item-content">
                     <h4>Instagram</h4>
-                    <p><Link href="https://www.instagram.com/taha_choudhary_19/" target="_blank" rel="noopener noreferrer">@taha_choudhary_19</Link></p>
+                    <p>@taha_choudhary_19</p>
                   </div>
-                </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -2772,7 +2892,25 @@ export default function Portfolio() {
                 ×
               </button>
               <div className="certificate-modal-image">
-                <img src={selectedCertificate.image} alt={selectedCertificate.title} />
+                <div
+                  className="certificate-modal-image-scroll"
+                  onWheel={handleWheelZoom}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  onTouchCancel={handleTouchEnd}
+                  onDoubleClick={handleDoubleClick}
+                  style={{ cursor: zoomLevel > 1 ? 'grab' : 'zoom-in' }}
+                >
+                  <img
+                    src={selectedCertificate.image}
+                    alt={selectedCertificate.title}
+                    style={{ 
+                      transform: `scale(${zoomLevel})`,
+                      transition: isPinching ? 'none' : 'transform 0.2s ease-out'
+                    }}
+                  />
+                </div>
               </div>
               <div className="certificate-modal-details">
                 <h2 className="certificate-modal-title">{selectedCertificate.title}</h2>

@@ -67,6 +67,36 @@ const certificates = [
     skills: ["Educators", "Content Creation", "AI Tools", "Teaching Support"],
   },
   {
+    title: "Certificate of Attendance Excellent Award",
+    issuer: "Nexcore Institute of Technology",
+    date: "June 06, 2026",
+    tag: "Achievement",
+    image: "/certificates/attendance-excellence-award.png",
+    description:
+      "Awarded for achieving the highest attendance in the First Year of AI & Data Science, recognizing outstanding punctuality, dedication, discipline, and consistent presence throughout the academic year.",
+    skills: ["Discipline", "Punctuality", "AI & DS", "First Year"],
+  },
+  {
+    title: "Certificate of Innovation — NIT-CoDeX Hackathon",
+    issuer: "Nexcore Institute of Technology",
+    date: "May 23, 2026",
+    tag: "Hackathon",
+    image: "/certificates/certificate-of-innovation-hackathon.png",
+    description:
+      "Received the prestigious \"Idea to Impact Award\" at NIT-CoDeX Hackathon 2026 Season 1 for outstanding creativity and innovation. Awarded to Team Errorists for turning ideas into impactful solutions with strong problem-solving and creative thinking.",
+    skills: ["Innovation", "Problem Solving", "Hackathon", "Creative Thinking"],
+  },
+  {
+    title: "Certificate of Participation — Shark Tank AIKTC",
+    issuer: "Anjuman-I-Islam's Kalsekar Technical Campus",
+    date: "August 21–22, 2026",
+    tag: "Startup",
+    image: "/certificates/shark-tank-participation.png",
+    description:
+      "Participated in Shark Tank AIKTC 2026, organized by E-Cell AIKTC in collaboration with the Kalsekar Incubation Centre. Recognized for active participation, valuable contribution, and enthusiastic support as part of Team X Factors.",
+    skills: ["Entrepreneurship", "Startup", "Innovation", "E-Cell"],
+  },
+  {
     title: "Yuva AI For ALL - English",
     issuer: "AISECT Learn (INDIAai)",
     date: "January 21, 2026",
