@@ -1,70 +1,494 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 
-export default function Portfolio() {
-  const [menuActive, setMenuActive] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [isAtTop, setIsAtTop] = useState(true);
-  const [selectedCertificate, setSelectedCertificate] = useState(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [pinchStartDist, setPinchStartDist] = useState(0);
-  const [pinchStartZoom, setPinchStartZoom] = useState(1);
-  const [isPinching, setIsPinching] = useState(false);
+/* ============================================
+   DATA
+   ============================================ */
+const PROJECTS = [
+  {
+    id: "01",
+    name: "Downtown Boutique",
+    short: "Luxury menswear e-commerce platform",
+    description:
+      "A premium modern luxury menswear boutique website with a sleek, sophisticated UI. Features full e-commerce functionality, designed for discerning individuals seeking everyday style and comfort.",
+    tags: ["Next.js", "React", "MongoDB", "E-Commerce"],
+    image: "/downtown.png",
+    link: "https://downtownboutique.in/",
+    external: true,
+  },
+  {
+    id: "02",
+    name: "Wanderlust Travel",
+    short: "Cinematic travel brand website",
+    description:
+      "A stunning travel website featuring the Wanderlust brand with beautiful beach imagery, smooth animations, and fully responsive design. Built with HTML, CSS, and Tailwind CSS.",
+    tags: ["HTML", "CSS", "Tailwind", "Responsive"],
+    image: "/Wanderlust.png",
+    link: "/Wanderlust.html",
+    external: false,
+  },
+  {
+    id: "03",
+    name: "Figma Design System",
+    short: "Comprehensive UI component library",
+    description:
+      "A comprehensive design system built in Figma featuring reusable components, a curated color palette, and typography guidelines — bridging design and development workflows.",
+    tags: ["Figma", "UI/UX", "Design Systems", "Prototyping"],
+    image: "/Figmaw.png",
+    link: "https://www.figma.com/design/g7i00edInUl6SZaVBy0XTW/Taha-Choudhary?node-id=0-1&t=OnaTT0PVmaTgfYTn-1",
+    external: true,
+  },
+];
+
+const SKILLS = [
+  { name: "HTML5", level: "Advanced", pct: 85, category: "Markup", color: "#E44D26" },
+  { name: "CSS3", level: "Advanced", pct: 85, category: "Styling", color: "#1572B6" },
+  { name: "Tailwind CSS", level: "Advanced", pct: 85, category: "Framework", color: "#06B6D4" },
+  { name: "JavaScript", level: "Learning", pct: 50, category: "Programming", color: "#F7DF1E" },
+  { name: "C Programming", level: "Intermediate", pct: 60, category: "Programming", color: "#03599C" },
+  { name: "Figma", level: "Advanced", pct: 80, category: "UI/UX Design", color: "#F24E1E" },
+  { name: "React", level: "Intermediate", pct: 70, category: "Library", color: "#61DAFB" },
+  { name: "Express.js", level: "Intermediate", pct: 65, category: "Backend", color: "#808080" },
+  { name: "Next.js", level: "Advanced", pct: 75, category: "Framework", color: "#f0f0f0" },
+  { name: "WordPress", level: "Advanced", pct: 80, category: "CMS", color: "#21759B" },
+  { name: "MySQL", level: "Intermediate", pct: 75, category: "Database", color: "#4479A1" },
+  { name: "Microsoft Excel", level: "Advanced", pct: 85, category: "Data Analysis", color: "#217346" },
+];
+
+const CERTS = [
+  {
+    image: "/certificates/teaching-ai-fluency-framework.png",
+    title: "Teaching the AI Fluency Framework",
+    issuer: "Anthropic",
+    date: "2026",
+    description:
+      "Completed advanced learning focused on teaching AI fluency concepts, responsible usage, and practical classroom integration.",
+    skills: ["AI Education", "Teaching Methods", "AI Ethics", "Curriculum Design"],
+  },
+  {
+    image: "/certificates/teaching-ai-fluency-framework.png",
+    title: "AI Fluency: Framework & Foundations",
+    issuer: "Anthropic",
+    date: "2026",
+    description:
+      "Core certification covering the foundational framework of AI fluency, machine learning basics, NLP, and ethical AI deployment.",
+    skills: ["AI Fundamentals", "Machine Learning", "NLP", "AI Ethics"],
+  },
+  {
+    image: "/certificates/claude-101.png",
+    title: "Claude 101",
+    issuer: "Anthropic",
+    date: "2026",
+    description:
+      "Foundational course on Claude AI, covering core capabilities, best practices for prompt engineering, and effective AI leverage.",
+    skills: ["Prompt Engineering", "AI Interaction", "Claude AI", "Conversational AI"],
+  },
+  {
+    image: "/certificates/ai-fluency-for-students.png",
+    title: "AI Fluency for Students",
+    issuer: "Anthropic",
+    date: "2026",
+    description:
+      "Student-focused program covering AI fundamentals, responsible usage, practical applications for learning and research.",
+    skills: ["AI Literacy", "Research Skills", "Critical Thinking", "Digital Skills"],
+  },
+  {
+    image: "/certificates/ai-fluency-for-nonprofits.png",
+    title: "AI Fluency for Nonprofits",
+    issuer: "Anthropic & GivingTuesday",
+    date: "2026",
+    description:
+      "Focused training on leveraging AI technologies for nonprofit organizations and social impact initiatives.",
+    skills: ["Social Impact", "Nonprofit Management", "AI Strategy", "Community Engagement"],
+  },
+  {
+    image: "/certificates/ai-fluency-for-educators.png",
+    title: "AI Fluency for Educators",
+    issuer: "Anthropic",
+    date: "2026",
+    description:
+      "Specialized program for educators to integrate AI tools into teaching practices, covering ethical considerations and student engagement.",
+    skills: ["Educational Technology", "AI in Education", "Student Engagement", "Digital Literacy"],
+  },
+  {
+    image: "/certificates/attendance-excellence-award.png",
+    title: "Attendance Excellence Award",
+    issuer: "Nexcore Institute of Technology",
+    date: "June 6, 2026",
+    description:
+      "Awarded for achieving the highest attendance in First Year of AI & Data Science, recognizing outstanding punctuality, dedication, and consistent presence.",
+    skills: ["Discipline", "Punctuality", "AI & Data Science", "First Year"],
+  },
+  {
+    image: "/certificates/certificate-of-innovation-hackathon.png",
+    title: "Certificate of Innovation — NIT-CoDeX Hackathon",
+    issuer: "Nexcore Institute of Technology",
+    date: "May 23, 2026",
+    description:
+      'Received the prestigious "Idea to Impact Award" at NIT-CoDeX Hackathon 2026 Season 1 for Team Errorists — outstanding creativity and problem-solving.',
+    skills: ["Innovation", "Problem Solving", "Hackathon", "Creative Thinking"],
+  },
+  {
+    image: "/certificates/shark-tank-participation.png",
+    title: "Participation — Shark Tank AIKTC",
+    issuer: "Anjuman-I-Islam's Kalsekar Technical Campus",
+    date: "August 21–22, 2026",
+    description:
+      "Participated in Shark Tank AIKTC 2026 with Team X Factors, organized by E-Cell AIKTC and the Kalsekar Incubation Centre.",
+    skills: ["Entrepreneurship", "Startup Pitch", "Innovation", "E-Cell"],
+  },
+  {
+    image: "/certificates/yuva-ai-for-all.png",
+    title: "Yuva AI For ALL — English",
+    issuer: "AISECT Learn (INDIAai)",
+    date: "January 21, 2026",
+    description:
+      "Completed a structured AI learning program covering basic AI concepts, awareness, and applications. Youth-focused initiative to democratize AI education.",
+    skills: ["AI Basics", "Youth Empowerment", "Career Development", "Future Skills"],
+  },
+  {
+    image: "/certificates/ai-for-all-appreciate-stage.png",
+    title: "AI For All — AI Appreciate Stage",
+    issuer: "Intel & Digital India",
+    date: "January 12, 2026",
+    description:
+      "Participated in Intel's AI For All initiative completing the AI Appreciate stage, exploring AI applications across industries.",
+    skills: ["AI Awareness", "Digital Transformation", "Industry Applications", "Innovation"],
+  },
+];
+
+
+/* ============================================
+   PARTICLE SYSTEM
+   ============================================ */
+function ParticleCanvas() {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    setMounted(true);
-    const link1 = document.createElement('link');
-    link1.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap';
-    link1.rel = 'stylesheet';
-    document.head.appendChild(link1);
-    const link2 = document.createElement('link');
-    link2.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
-    link2.rel = 'stylesheet';
-    document.head.appendChild(link2);
-    const handleClickOutside = (e) => {
-      if (!e.target.closest('.menu-toggle') && !e.target.closest('.nav-links')) {
-        setMenuActive(false);
-      }
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId;
+    let particles = [];
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
     };
-    const handleScroll = () => { setIsAtTop(window.scrollY < 100); };
-    document.addEventListener('click', handleClickOutside);
-    window.addEventListener('scroll', handleScroll);
+
+    resize();
+    window.addEventListener("resize", resize);
+
+    const N = Math.min(60, Math.floor((canvas.width * canvas.height) / 18000));
+
+    for (let i = 0; i < N; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5 + 0.3,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        a: Math.random() * 0.6 + 0.1,
+      });
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(110, 231, 255, ${p.a * 0.5})`;
+        ctx.fill();
+      });
+
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(110, 231, 255, ${0.03 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    // Reduce motion check
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!prefersReduced) draw();
+
     return () => {
-      document.removeEventListener('click', handleClickOutside);
-      window.removeEventListener('scroll', handleScroll);
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
     };
   }, []);
 
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    if (selectedCertificate) {
-      document.body.style.overflow = 'hidden';
-      setZoomLevel(1);
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [selectedCertificate]);
+  return (
+    <canvas
+      ref={canvasRef}
+      id="particle-canvas"
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+    />
+  );
+}
 
-  // Scroll-wheel zoom (desktop)
+/* ============================================
+   MAIN PORTFOLIO COMPONENT
+   ============================================ */
+export default function Portfolio() {
+  const [mounted, setMounted] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [showBackTop, setShowBackTop] = useState(false);
+  const [selectedCert, setSelectedCert] = useState(null);
+  const [certZoom, setCertZoom] = useState(1);
+  const [pinchData, setPinchData] = useState({ start: 0, startZoom: 1 });
+
+  const scrollProgressRef = useRef(null);
+
+  // Hero refs
+
+  const heroTitleRef = useRef(null);
+  const heroSubtitleRef = useRef(null);
+  const heroActionsRef = useRef(null);
+  const heroCtasRef = useRef(null);
+  const heroPortraitRef = useRef(null);
+
+
+  // Refs for scroll reveals
+  const revealRefs = useRef([]);
+  const skillBarsRef = useRef([]);
+
+  const addRevealRef = useCallback((el) => {
+    if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el);
+  }, []);
+
+  /* ------ Mount ------ */
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  /* ------ Scroll listener ------ */
+  useEffect(() => {
+    if (!mounted) return;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 60);
+      setShowBackTop(y > 400);
+
+      // Scroll progress
+      const doc = document.documentElement;
+      const total = doc.scrollHeight - doc.clientHeight;
+      if (scrollProgressRef.current) {
+        scrollProgressRef.current.style.transform = `scaleX(${total ? y / total : 0})`;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [mounted]);
+
+
+
+  /* ------ Hero Entrance Animation (CSS-based, no GSAP needed) ------ */
+  useEffect(() => {
+    if (!mounted) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const animate = async () => {
+      const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+
+      // Title lines
+      if (heroTitleRef.current) {
+        heroTitleRef.current.style.opacity = "1";
+        const inners = heroTitleRef.current.querySelectorAll(".hero-title-inner");
+        inners.forEach((inner, i) => {
+          if (!prefersReduced) {
+            setTimeout(() => {
+              inner.style.transition = `transform 0.9s cubic-bezier(0.16,1,0.3,1) ${i * 80}ms`;
+              inner.style.transform = "translateY(0)";
+            }, 0);
+          } else {
+            inner.style.transform = "none";
+          }
+        });
+      }
+
+      if (!prefersReduced) await delay(500);
+
+      if (heroSubtitleRef.current) {
+        heroSubtitleRef.current.style.transition = "opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1)";
+        heroSubtitleRef.current.style.opacity = "1";
+        heroSubtitleRef.current.style.transform = "translateY(0)";
+      }
+
+      if (!prefersReduced) await delay(150);
+
+      if (heroActionsRef.current) {
+        heroActionsRef.current.style.transition = "opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1)";
+        heroActionsRef.current.style.opacity = "1";
+        heroActionsRef.current.style.transform = "translateY(0)";
+      }
+
+      if (heroCtasRef.current) {
+        heroCtasRef.current.style.transition = "opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1)";
+        heroCtasRef.current.style.opacity = "1";
+        heroCtasRef.current.style.transform = "translateY(0)";
+      }
+
+      if (!prefersReduced) await delay(200);
+
+      if (heroPortraitRef.current) {
+        heroPortraitRef.current.style.transition = "opacity 1s ease, transform 1s cubic-bezier(0.16,1,0.3,1)";
+        heroPortraitRef.current.style.opacity = "1";
+        heroPortraitRef.current.style.transform = "translateY(0) scale(1)";
+      }
+
+      if (!prefersReduced) await delay(300);
+
+
+    };
+
+    animate();
+  }, [mounted]);
+
+  /* ------ Scroll Reveal ------ */
+  useEffect(() => {
+    if (!mounted) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            const delay = el.dataset.delay || "0";
+
+            if (prefersReduced) {
+              el.style.opacity = "1";
+              el.style.transform = "none";
+            } else {
+              setTimeout(() => {
+                el.style.transition = "opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)";
+                el.style.opacity = "1";
+                el.style.transform = "translate(0,0)";
+              }, parseInt(delay));
+            }
+            observer.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -60px 0px" }
+    );
+
+    revealRefs.current.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [mounted]);
+
+  /* ------ Skill Bar Reveals ------ */
+  useEffect(() => {
+    if (!mounted) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+      skillBarsRef.current.forEach((el) => {
+        if (el) el.style.transform = "scaleX(1)";
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.transform = "scaleX(1)";
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    skillBarsRef.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, [mounted]);
+
+  /* ------ Parallax on hero (mouse) ------ */
+  useEffect(() => {
+    if (!mounted) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+    if (window.matchMedia("(hover: none)").matches) return;
+
+    const hero = document.querySelector(".hero");
+    if (!hero) return;
+
+    const onMove = (e) => {
+      const rect = hero.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) / cx;
+      const dy = (e.clientY - cy) / cy;
+
+      const orb1 = hero.querySelector(".hero-orb-1");
+      const orb2 = hero.querySelector(".hero-orb-2");
+      if (orb1) orb1.style.transform = `translate(${dx * 20}px, ${dy * 20}px)`;
+      if (orb2) orb2.style.transform = `translate(${-dx * 15}px, ${-dy * 15}px)`;
+    };
+
+    hero.addEventListener("mousemove", onMove);
+    return () => hero.removeEventListener("mousemove", onMove);
+  }, [mounted]);
+
+  /* ------ Lock body scroll when modal is open ------ */
+  useEffect(() => {
+    if (selectedCert) {
+      document.body.style.overflow = "hidden";
+      setCertZoom(1);
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [selectedCert]);
+
+  /* ------ ESC closes modal ------ */
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") setSelectedCert(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  /* ------ Zoom handlers for cert modal ------ */
   const handleWheelZoom = (e) => {
     e.preventDefault();
     const delta = e.deltaY < 0 ? 0.15 : -0.15;
-    setZoomLevel(z => Math.min(Math.max(z + delta, 0.5), 5));
+    setCertZoom((z) => Math.min(Math.max(z + delta, 0.5), 5));
   };
 
-  // Pinch-to-zoom (touch)
   const handleTouchStart = (e) => {
     if (e.touches.length === 2) {
-      setIsPinching(true);
       const dist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      setPinchStartDist(dist);
-      setPinchStartZoom(zoomLevel);
+      setPinchData({ start: dist, startZoom: certZoom });
     }
   };
 
@@ -75,2858 +499,816 @@ export default function Portfolio() {
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      const scale = dist / (pinchStartDist || 1);
-      setZoomLevel(Math.min(Math.max(pinchStartZoom * scale, 0.5), 5));
+      setCertZoom(
+        Math.min(Math.max(pinchData.startZoom * (dist / (pinchData.start || 1)), 0.5), 5)
+      );
     }
   };
 
-  const handleTouchEnd = () => {
-    setIsPinching(false);
-  };
-
-  // Double-tap to reset zoom
-  const handleDoubleClick = () => setZoomLevel(1);
-
-  const handleNavClick = () => {
-    setMenuActive(false);
-  };
-
-  const handleScroll = () => {
-    if (isAtTop) {
-      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   return (
     <>
-      <style jsx global>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
 
-        html {
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-          scroll-behavior: smooth;
-        }
 
-        :root {
-          --primary: #6366f1;
-          --secondary: #0ea5e9;
-          --dark: #09090b;
-          --dark-light: #18181b;
-          --accent: #8b5cf6;
-          --text: #f8fafc;
-          --text-dim: #94a3b8;
-        }
-
-        body {
-          font-family: 'Inter', sans-serif;
-          background: var(--dark);
-          color: var(--text);
-          overflow-x: hidden;
-          line-height: 1.8;
-          font-size: 16px;
-          letter-spacing: -0.015em;
-        }
-
-        h1, h2, h3, h4, h5, h6, p, span, div, a, button {
-          overflow: visible !important;
-          line-height: 1.6 !important;
-        }
-
-        .container {
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 0 1.5rem;
-        }
-
-        nav {
-          position: fixed;
-          top: 0;
-          width: 100%;
-          z-index: 1000;
-          background: rgba(10, 14, 39, 0.95);
-          backdrop-filter: blur(10px);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1rem 1.5rem;
-          max-width: 1400px;
-          margin: 0 auto;
-        }
-
-        .logo {
-          font-family: 'Inter', sans-serif;
-          font-weight: 800;
-          font-size: 1.5rem;
-          letter-spacing: -0.05em;
-          background: linear-gradient(135deg, var(--text), var(--text-dim));
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          z-index: 1001;
-        }
-
-        .nav-links {
-          display: flex;
-          gap: 2rem;
-          list-style: none;
-        }
-
-        .nav-links a {
-          color: var(--text);
-          text-decoration: none;
-          font-weight: 500;
-          font-size: 0.95rem;
-          transition: color 0.3s;
-          position: relative;
-        }
-
-        .nav-links a:hover {
-          color: var(--secondary);
-        }
-
-        .nav-links a::after {
-          content: '';
-          position: absolute;
-          bottom: -5px;
-          left: 0;
-          width: 0;
-          height: 2px;
-          background: var(--secondary);
-          transition: width 0.3s;
-        }
-
-        .nav-links a:hover::after {
-          width: 100%;
-        }
-
-        .menu-toggle {
-          display: none;
-          flex-direction: column;
-          gap: 5px;
-          cursor: pointer;
-          z-index: 1001;
-        }
-
-        .menu-toggle span {
-          width: 25px;
-          height: 3px;
-          background: var(--text);
-          border-radius: 3px;
-          transition: all 0.3s;
-        }
-
-        .menu-toggle.active span:nth-child(1) {
-          transform: rotate(45deg) translate(8px, 8px);
-        }
-
-        .menu-toggle.active span:nth-child(2) {
-          opacity: 0;
-        }
-
-        .menu-toggle.active span:nth-child(3) {
-          transform: rotate(-45deg) translate(7px, -7px);
-        }
-
-        .hero {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          padding-top: 80px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .hero-grid {
-          display: grid;
-          grid-template-columns: 1.2fr 0.8fr;
-          gap: 4rem;
-          align-items: center;
-        }
-
-        .hero-image {
-          width: 100%;
-          max-width: 480px;
-          aspect-ratio: 1;
-          background: linear-gradient(135deg, var(--dark-light), transparent);
-          border-radius: 3rem;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          overflow: hidden;
-          margin-left: auto;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-          animation: float 6s ease-in-out infinite;
-          backdrop-filter: blur(20px);
-        }
-
-        .hero-image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 3rem;
-          transition: all 0.5s ease;
-        }
-        
-        .hero-image:hover img {
-          transform: scale(1.03);
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-15px); }
-        }
-
-        .hero::before {
-          content: '';
-          position: absolute;
-          width: 800px;
-          height: 800px;
-          background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent 60%);
-          top: -200px;
-          right: -100px;
-          border-radius: 50%;
-          animation: pulse 10s ease-in-out infinite;
-          filter: blur(60px);
-          z-index: 0;
-        }
-
-        .hero::after {
-          content: '';
-          position: absolute;
-          width: 600px;
-          height: 600px;
-          background: radial-gradient(circle, rgba(14, 165, 233, 0.1), transparent 60%);
-          bottom: -200px;
-          left: -200px;
-          border-radius: 50%;
-          animation: pulse 8s ease-in-out infinite reverse;
-          filter: blur(60px);
-          z-index: 0;
-        }
-
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); opacity: 0.5; }
-          50% { transform: scale(1.1); opacity: 0.8; }
-        }
-
-        .hero-content {
-          position: relative;
-          z-index: 1;
-        }
-
-        .hero h1 {
-          font-family: 'Inter', sans-serif;
-          font-size: clamp(3rem, 7vw, 5.5rem);
-          font-weight: 800;
-          line-height: 1.05;
-          letter-spacing: -0.03em;
-          margin-bottom: 1.5rem;
-          padding-bottom: 0.5rem;
-          animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
-        }
-
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(40px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hero h1 .gradient-text {
-          background: linear-gradient(135deg, var(--text), var(--text-dim));
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        
-        .hero h1 .accent-text {
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .hero p {
-          font-size: clamp(1.1rem, 2vw, 1.25rem);
-          color: var(--text-dim);
-          max-width: 580px;
-          margin-bottom: 2.5rem;
-          line-height: 1.7;
-          animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
-        }
-
-        .cta-buttons {
-          display: flex;
-          gap: 1.25rem;
-          flex-wrap: wrap;
-          animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
-        }
-
-        .btn {
-          padding: 0.875rem 2.25rem;
-          border-radius: 100px;
-          font-weight: 600;
-          text-decoration: none;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          cursor: pointer;
-          border: 1px solid transparent;
-          font-size: 0.95rem;
-          text-align: center;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.75rem;
-        }
-
-        .btn-primary {
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          color: white;
-          box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
-        }
-
-        .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
-          filter: brightness(1.1);
-        }
-
-        .btn-secondary {
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          color: var(--text);
-          backdrop-filter: blur(10px);
-        }
-
-        .btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: rgba(255, 255, 255, 0.2);
-          transform: translateY(-2px);
-        }
-
-        section {
-          padding: 6rem 0;
-          position: relative;
-        }
-
-        .section-header {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          margin-bottom: 4rem;
-          position: relative;
-        }
-
-        .section-tag {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.5rem 1.25rem;
-          background: rgba(99, 102, 241, 0.1);
-          border: 1px solid rgba(99, 102, 241, 0.2);
-          border-radius: 100px;
-          color: var(--primary);
-          font-size: 0.85rem;
-          font-weight: 600;
-          margin-bottom: 1.25rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .section-title {
-          font-family: 'Inter', sans-serif;
-          font-size: clamp(2.5rem, 5vw, 4rem);
-          font-weight: 800;
-          letter-spacing: -0.03em;
-          margin-bottom: 1rem;
-          line-height: 1.1;
-          color: var(--text);
-        }
-
-        .section-subtitle {
-          color: var(--text-dim);
-          font-size: clamp(1.05rem, 1.5vw, 1.2rem);
-          max-width: 600px;
-          line-height: 1.7;
-        }
-
-        .about-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 3rem;
-          align-items: center;
-        }
-
-        .about-image {
-          width: 100%;
-          aspect-ratio: 1;
-          background: linear-gradient(135deg, var(--dark-light), rgba(0, 102, 255, 0.1));
-          border-radius: 2rem;
-          border: 2px solid rgba(0, 245, 255, 0.2);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 4rem;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .about-image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 2rem;
-        }
-
-        .about-content h3 {
-          font-family: 'Poppins', sans-serif;
-          font-size: clamp(1.5rem, 3vw, 2.25rem);
-          margin-bottom: 1.5rem;
-          line-height: 1.4;
-          padding-bottom: 0.5rem;
-        }
-
-        .about-content p {
-          color: var(--text-dim);
-          margin-bottom: 1.5rem;
-          line-height: 1.9;
-          font-size: clamp(0.95rem, 2vw, 1.125rem);
-        }
-
-        .stats {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.5rem;
-          margin-top: 2rem;
-        }
-
-        .stat-item {
-          text-align: center;
-          padding: 1.5rem 1rem;
-          background: var(--dark-light);
-          border-radius: 1rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-number {
-          font-family: 'Poppins', sans-serif;
-          font-size: clamp(2rem, 4vw, 3rem);
-          font-weight: 700;
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          line-height: 1.2;
-        }
-
-        .stat-label {
-          color: var(--text-dim);
-          font-size: clamp(0.85rem, 1.5vw, 1rem);
-          margin-top: 0.5rem;
-          line-height: 1.5;
-        }
-
-        .skills-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2rem;
-        }
-
-
-
-        .skill-card-new {
-          background: var(--dark-light);
-          padding: 2rem;
-          border-radius: 1.5rem;
-          transition: all 0.3s;
-          position: relative;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .skill-card-new:hover {
-          transform: translateY(-10px);
-          border-color: var(--primary);
-          box-shadow: 0 20px 40px rgba(0, 102, 255, 0.2);
-        }
-
-        .skill-icon-container {
-          display: flex;
-          justify-content: center;
-          margin-bottom: 1.5rem;
-          padding: 2rem;
-          border-radius: 1rem;
-        }
-
-        .skill-icon {
-          width: 80px;
-          height: 80px;
-          border-radius: 1rem;
-          padding: 0.75rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .skill-title {
-          font-family: 'Poppins', sans-serif;
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: var(--text);
-          margin-bottom: 0.5rem;
-          text-align: center;
-        }
-
-        .skill-category {
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: var(--text-dim);
-          text-align: center;
-          letter-spacing: 1px;
-          margin-bottom: 1rem;
-        }
-
-        .skill-description {
-          color: var(--text-dim);
-          text-align: center;
-          font-size: 0.95rem;
-          margin-bottom: 1.5rem;
-          line-height: 1.6;
-        }
-
-        .skill-proficiency {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.75rem;
-        }
-
-        .proficiency-label {
-          font-size: 0.9rem;
-          color: var(--text-dim);
-          font-weight: 500;
-        }
-
-        .proficiency-value {
-          font-size: 1.1rem;
-          font-weight: 700;
-        }
-
-        .progress-bar {
-          width: 100%;
-          height: 8px;
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-          overflow: hidden;
-          margin-bottom: 1.5rem;
-        }
-
-        .progress-fill {
-          height: 100%;
-          border-radius: 10px;
-          transition: width 1s ease-in-out;
-        }
-
-        .skill-footer {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 0.75rem;
-        }
-
-        .skill-duration {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 0.85rem;
-          color: var(--text-dim);
-          font-weight: 500;
-        }
-
-        .skill-level {
-          padding: 0.5rem 1.25rem;
-          border-radius: 50px;
-          font-size: 0.85rem;
-          font-weight: 600;
-          text-transform: capitalize;
-        }
-
-        .projects-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 2.5rem;
-        }
-
-        .project-card {
-          background: rgba(26, 31, 58, 0.4);
-          border-radius: 1.5rem;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          backdrop-filter: blur(10px);
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-
-        .project-card:hover {
-          transform: translateY(-8px);
-          border-color: rgba(99, 102, 241, 0.3);
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(99, 102, 241, 0.1);
-          background: rgba(26, 31, 58, 0.7);
-        }
-
-        .project-image {
-          width: 100%;
-          height: 220px;
-          background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(14, 165, 233, 0.05));
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 3rem;
-          position: relative;
-          overflow: hidden;
-          border-radius: 1.5rem 1.5rem 0 0;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          transform: translateZ(0); /* Force clipping in Safari */
-        }
-
-        .project-image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .project-card:hover .project-image img {
-          transform: scale(1.08);
-        }
-
-        .project-content {
-          padding: 2rem;
-          display: flex;
-          flex-direction: column;
-          flex-grow: 1;
-        }
-
-        .project-title {
-          font-family: 'Inter', sans-serif;
-          font-size: clamp(1.35rem, 2vw, 1.75rem);
-          font-weight: 700;
-          margin-bottom: 0.75rem;
-          line-height: 1.3;
-          color: white;
-          letter-spacing: -0.01em;
-        }
-
-        .project-description {
-          color: var(--text-dim);
-          line-height: 1.8;
-          margin-bottom: 1.5rem;
-          font-size: 1.05rem;
-          flex-grow: 1;
-        }
-
-        .project-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.65rem;
-          margin-bottom: 2rem;
-        }
-
-        .project-tag {
-          padding: 0.4rem 1rem;
-          background: rgba(99, 102, 241, 0.1);
-          border: 1px solid rgba(99, 102, 241, 0.2);
-          border-radius: 100px;
-          font-size: 0.8rem;
-          font-weight: 500;
-          color: var(--secondary);
-          transition: all 0.3s ease;
-        }
-        
-        .project-card:hover .project-tag {
-          background: rgba(99, 102, 241, 0.15);
-          border-color: rgba(99, 102, 241, 0.3);
-        }
-
-        .project-links {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-
-        .project-link {
-          padding: 0.75rem 1.5rem;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 100px;
-          color: var(--text);
-          text-decoration: none;
-          font-weight: 600;
-          font-size: 0.85rem;
-          transition: all 0.3s;
-          text-align: center;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .project-link:hover {
-          background: var(--primary);
-          border-color: var(--primary);
-          color: white;
-          transform: translateY(-2px);
-        }
-
-        .timeline {
-          position: relative;
-          max-width: 900px;
-          margin: 0 auto;
-          padding-left: 2rem;
-        }
-
-        .timeline::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          width: 2px;
-          background: rgba(255, 255, 255, 0.1);
-        }
-
-        .timeline-item {
-          position: relative;
-          padding-left: 3rem;
-          padding-bottom: 4rem;
-        }
-
-        .timeline-item:last-child {
-          padding-bottom: 0;
-        }
-
-        .timeline-dot {
-          position: absolute;
-          left: -0.4rem;
-          top: 0;
-          width: 20px;
-          height: 20px;
-          background: var(--dark);
-          border: 4px solid var(--primary);
-          border-radius: 50%;
-          box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
-          transition: all 0.3s ease;
-          z-index: 10;
-        }
-
-        .timeline-item:hover .timeline-dot {
-          background: var(--primary);
-          box-shadow: 0 0 20px rgba(99, 102, 241, 0.6), 0 0 0 6px rgba(99, 102, 241, 0.2);
-        }
-
-        .education-card {
-          background: rgba(26, 31, 58, 0.5);
-          padding: 2.5rem;
-          border-radius: 1.5rem;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(10px);
-          position: relative;
-          transition: all 0.4s ease;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .education-card:hover {
-          transform: translateX(10px);
-          border-color: rgba(99, 102, 241, 0.3);
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
-
-        .education-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 1.5rem;
-          flex-wrap: wrap;
-          gap: 1.5rem;
-        }
-
-        .education-title {
-          font-family: 'Inter', sans-serif;
-          font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-          font-weight: 700;
-          margin-bottom: 0.5rem;
-          line-height: 1.4;
-          color: white;
-        }
-
-        .education-institution {
-          color: var(--secondary);
-          font-weight: 600;
-          font-size: clamp(1rem, 1.5vw, 1.15rem);
-          line-height: 1.5;
-        }
-
-        .education-period {
-          padding: 0.5rem 1.25rem;
-          background: rgba(14, 165, 233, 0.1);
-          border: 1px solid rgba(14, 165, 233, 0.2);
-          border-radius: 100px;
-          color: var(--secondary);
-          font-size: 0.85rem;
-          font-weight: 600;
-          white-space: nowrap;
-          letter-spacing: 0.05em;
-        }
-
-        .education-description {
-          color: var(--text-dim);
-          line-height: 1.9;
-          font-size: 1.05rem;
-        }
-
-        .certificates-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 2rem;
-          align-items: start;
-        }
-
-        .certificate-card {
-          background: rgba(26, 31, 58, 0.4);
-          border-radius: 1.5rem;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          overflow: hidden;
-          cursor: pointer;
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          backdrop-filter: blur(10px);
-        }
-
-        .certificate-card:hover {
-          transform: translateY(-8px);
-          border-color: rgba(99, 102, 241, 0.3);
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(99, 102, 241, 0.1);
-          background: rgba(26, 31, 58, 0.7);
-        }
-
-        .certificate-image {
-          width: 100%;
-          height: 220px;
-          background: rgba(255, 255, 255, 0.03);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          position: relative;
-          flex-shrink: 0;
-          border-radius: 1.5rem 1.5rem 0 0;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          transform: translateZ(0); /* Force clipping in Safari */
-        }
-
-        .certificate-image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 1.5rem 1.5rem 0 0;
-          transition: transform 0.3s;
-        }
-
-        .certificate-card:hover .certificate-image img {
-          transform: scale(1.05);
-        }
-
-        .certificate-content {
-          padding: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          flex-grow: 1;
-        }
-
-        .certificate-title {
-          font-family: 'Poppins', sans-serif;
-          font-size: clamp(1.1rem, 2vw, 1.35rem);
-          margin-bottom: 0.5rem;
-          line-height: 1.4;
-          color: var(--text);
-          min-height: 2.8em;
-        }
-
-        .certificate-issuer {
-          color: var(--secondary);
-          font-weight: 600;
-          font-size: 0.95rem;
-          margin-bottom: 0.25rem;
-        }
-
-        .certificate-date {
-          color: var(--text-dim);
-          font-size: 0.875rem;
-          margin-bottom: 0.75rem;
-        }
-
-        .certificate-description {
-          color: var(--text-dim);
-          font-size: 0.9rem;
-          line-height: 1.6;
-          margin-top: auto;
-        }
-
-        .certificate-modal {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.92);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10000;
-          padding: 2rem;
-          overflow: hidden;
-          animation: fadeIn 0.3s ease;
-          backdrop-filter: blur(5px);
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        .certificate-modal-content {
-          background: var(--dark-light);
-          border-radius: 2rem;
-          max-width: 900px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto !important;
-          position: relative;
-          border: 1px solid rgba(0, 102, 255, 0.2);
-          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-          animation: slideUp 0.4s ease;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .certificate-modal-close {
-          position: absolute;
-          top: 1.5rem;
-          right: 1.5rem;
-          width: 50px;
-          height: 50px;
-          background: rgba(0, 0, 0, 0.9);
-          border: 2px solid rgba(255, 255, 255, 0.1);
-          border-radius: 50%;
-          color: white;
-          font-size: 28px;
-          font-weight: 300;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s;
-          z-index: 10;
-          backdrop-filter: blur(10px);
-        }
-
-        .certificate-modal-close:hover {
-          background: var(--accent);
-          border-color: var(--accent);
-          transform: rotate(90deg) scale(1.1);
-        }
-
-        .certificate-modal-image {
-          width: 100%;
-          flex-shrink: 0;
-          background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 102, 255, 0.05));
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          position: relative;
-        }
-
-        .certificate-modal-image-scroll {
-          width: 100%;
-          overflow: auto !important;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 1.5rem;
-          cursor: zoom-in;
-          touch-action: none;
-        }
-
-        .certificate-modal-image-scroll img {
-          display: block;
-          border-radius: 0.5rem;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-          transform-origin: center center;
-          max-width: 100%;
-          height: auto;
-        }
-
-        .certificate-modal-details {
-          padding: 2rem 2.5rem 2.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 1.25rem;
-          flex-shrink: 0;
-        }
-
-        .certificate-modal-details::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .certificate-modal-details::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 10px;
-        }
-
-        .certificate-modal-details::-webkit-scrollbar-thumb {
-          background: rgba(0, 102, 255, 0.5);
-          border-radius: 10px;
-        }
-
-        .certificate-modal-details::-webkit-scrollbar-thumb:hover {
-          background: rgba(0, 102, 255, 0.7);
-        }
-
-        .certificate-modal-title {
-          font-family: 'Poppins', sans-serif;
-          font-size: clamp(1.75rem, 3vw, 2.75rem);
-          margin-bottom: 0.5rem;
-          color: var(--text);
-          line-height: 1.3;
-          font-weight: 700;
-        }
-
-        .certificate-modal-issuer {
-          color: var(--secondary);
-          font-weight: 600;
-          font-size: 1.35rem;
-          margin-bottom: 0.25rem;
-          letter-spacing: 0.5px;
-        }
-
-        .certificate-modal-date {
-          color: var(--text-dim);
-          font-size: 1.05rem;
-          margin-bottom: 1.5rem;
-          padding-bottom: 1.5rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .certificate-modal-description {
-          color: var(--text-dim);
-          font-size: 1.1rem;
-          line-height: 1.9;
-          margin-bottom: 1.5rem;
-          text-align: justify;
-        }
-
-        .certificate-modal-skills {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.85rem;
-          margin-top: 0.5rem;
-        }
-
-        .certificate-skill-tag {
-          padding: 0.65rem 1.25rem;
-          background: rgba(0, 102, 255, 0.12);
-          border: 1px solid rgba(0, 102, 255, 0.35);
-          border-radius: 50px;
-          font-size: 0.95rem;
-          color: var(--secondary);
-          font-weight: 500;
-          transition: all 0.3s;
-        }
-
-        .certificate-skill-tag:hover {
-          background: rgba(0, 102, 255, 0.2);
-          border-color: var(--secondary);
-          transform: translateY(-2px);
-        }
-
-        @media (max-width: 768px) {
-          .certificate-modal {
-            padding: 1rem;
-          }
-
-          .certificate-modal-content {
-            border-radius: 1.5rem;
-          }
-
-          .certificate-modal-image {
-            padding: 1.5rem;
-          }
-
-          .certificate-modal-image img {
-            max-height: 35vh;
-          }
-
-          .certificate-modal-details {
-            padding: 2rem 1.5rem;
-            gap: 1rem;
-          }
-
-          .certificate-modal-title {
-            font-size: 1.75rem;
-          }
-
-          .certificate-modal-issuer {
-            font-size: 1.15rem;
-          }
-
-          .certificate-modal-description {
-            font-size: 1rem;
-          }
-
-          .certificate-modal-close {
-            top: 1rem;
-            right: 1rem;
-            width: 45px;
-            height: 45px;
-            font-size: 24px;
-          }
-
-          .certificates-grid {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-          }
-
-          .certificate-image {
-            height: 200px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .certificate-modal {
-            padding: 0.75rem;
-          }
-
-          .certificate-modal-content {
-            border-radius: 1.25rem;
-          }
-
-          .certificate-modal-image {
-            padding: 1rem;
-          }
-
-          .certificate-modal-image img {
-            max-height: 30vh;
-          }
-
-          .certificate-modal-details {
-            padding: 1.5rem 1rem;
-          }
-
-          .certificate-modal-title {
-            font-size: 1.5rem;
-          }
-
-          .certificate-modal-issuer {
-            font-size: 1rem;
-          }
-
-          .certificate-modal-description {
-            font-size: 0.95rem;
-            text-align: left;
-          }
-
-          .certificate-modal-close {
-            width: 40px;
-            height: 40px;
-            font-size: 22px;
-            top: 0.75rem;
-            right: 0.75rem;
-          }
-
-          .certificate-skill-tag {
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-          }
-
-          .certificates-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-          }
-
-          .certificate-image {
-            height: 180px;
-          }
-        }
-
-        .contact-info {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-
-        .contact-info h3 {
-          font-family: 'Poppins', sans-serif;
-          font-size: clamp(1.5rem, 3vw, 2.25rem);
-          margin-bottom: 1.5rem;
-          line-height: 1.4;
-        }
-
-        .contact-info > p {
-          color: var(--text-dim);
-          margin-bottom: 2rem;
-          line-height: 1.9;
-          font-size: clamp(1rem, 2vw, 1.125rem);
-        }
-
-        .contact-methods {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .contact-item {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 1.5rem;
-          background: var(--dark-light);
-          border-radius: 1rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          transition: all 0.3s;
-        }
-
-        .contact-item:hover {
-          border-color: var(--primary);
-          transform: translateX(5px);
-        }
-
-        .contact-icon {
-          width: 50px;
-          height: 50px;
-          min-width: 50px;
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          border-radius: 0.75rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.25rem;
-        }
-
-        .contact-item-content h4 {
-          font-weight: 600;
-          margin-bottom: 0.25rem;
-          font-size: clamp(0.95rem, 1.5vw, 1.1rem);
-        }
-
-        .contact-item-content p {
-          color: var(--text-dim);
-          margin: 0;
-          font-size: clamp(0.8rem, 1.2vw, 0.875rem);
-          word-break: break-word;
-        }
-
-        .contact-item-content a {
-          color: var(--text-dim);
-          text-decoration: none;
-          transition: color 0.3s;
-        }
-
-        .contact-item-content a:hover {
-          color: var(--secondary);
-        }
-
-        footer {
-          background: var(--dark-light);
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          padding: 3rem 0 1.5rem;
-        }
-
-        .footer-content {
-          display: grid;
-          grid-template-columns: 2fr 1fr 1fr 1.5fr;
-          gap: 3rem;
-          margin-bottom: 2rem;
-          padding-bottom: 2rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .footer-section h4 {
-          color: var(--text);
-          font-size: 1.1rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-        }
-
-        .footer-logo {
-          font-family: 'Poppins', sans-serif;
-          font-weight: 800;
-          font-size: 2rem;
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          margin-bottom: 0.75rem;
-        }
-
-        .footer-tagline {
-          color: var(--text-dim);
-          font-size: 0.95rem;
-          line-height: 1.6;
-          margin-bottom: 1.5rem;
-        }
-
-        .footer-social {
-          display: flex;
-          gap: 1rem;
-        }
-
-        .footer-social a {
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 0.5rem;
-          color: var(--text-dim);
-          transition: all 0.3s;
-        }
-
-        .footer-social a:hover {
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          color: white;
-          transform: translateY(-3px);
-        }
-
-        .footer-links {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        .footer-links li {
-          margin-bottom: 0.75rem;
-        }
-
-        .footer-links a {
-          color: var(--text-dim);
-          text-decoration: none;
-          font-size: 0.95rem;
-          transition: color 0.3s;
-          display: inline-block;
-        }
-
-        .footer-links a:hover {
-          color: var(--secondary);
-          transform: translateX(5px);
-        }
-
-        .footer-contact {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        .footer-contact li {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          margin-bottom: 1rem;
-          color: var(--text-dim);
-          font-size: 0.9rem;
-        }
-
-        .footer-contact svg {
-          flex-shrink: 0;
-          color: var(--secondary);
-        }
-
-        .footer-contact a {
-          color: var(--text-dim);
-          text-decoration: none;
-          transition: color 0.3s;
-        }
-
-        .footer-contact a:hover {
-          color: var(--secondary);
-        }
-
-        .footer-bottom {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .footer-bottom p {
-          color: var(--text-dim);
-          font-size: 0.9rem;
-          margin: 0;
-        }
-
-        .whatsapp-float {
-          position: fixed;
-          width: 60px;
-          height: 60px;
-          bottom: 110px;
-          right: 30px;
-          background-color: #25D366;
-          color: white;
-          border-radius: 50px;
-          text-align: center;
-          font-size: 30px;
-          box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-          z-index: 999;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s;
-          cursor: pointer;
-        }
-
-        .whatsapp-float:hover {
-          background-color: #128C7E;
-          box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
-          transform: scale(1.1);
-        }
-
-        .whatsapp-float svg {
-          width: 35px;
-          height: 35px;
-        }
-
-        .scroll-buttons {
-          position: fixed;
-          bottom: 30px;
-          right: 30px;
-          z-index: 999;
-        }
-
-        .scroll-btn {
-          width: 55px;
-          height: 55px;
-          background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(26, 31, 58, 0.98));
-          color: white;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 28px;
-          font-weight: 900;
-          line-height: 1;
-          box-shadow: 0 4px 20px rgba(0, 102, 255, 0.3), 0 0 0 1px rgba(0, 102, 255, 0.2);
-          cursor: pointer;
-          transition: all 0.3s ease;
-          border: 2px solid rgba(0, 102, 255, 0.4);
-          backdrop-filter: blur(10px);
-        }
-
-        .scroll-btn:hover {
-          transform: scale(1.15) translateY(-2px);
-          box-shadow: 0 8px 30px rgba(0, 102, 255, 0.6), 0 0 0 2px rgba(0, 245, 255, 0.4);
-          border-color: var(--secondary);
-          background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(0, 245, 255, 0.2));
-        }
-
-        .scroll-btn:active {
-          transform: scale(1.05);
-        }
-
-        /* =============================================
-           TABLET (769px - 1024px): Show image in 2-col grid
-           ============================================= */
-        @media (min-width: 769px) and (max-width: 1024px) {
-          /* Force hero as 2-col and show image on tablet */
-          .hero-grid {
-            grid-template-columns: 1fr 1fr !important;
-            gap: 2rem;
-          }
-
-          .hero-image {
-            display: flex !important;
-            max-width: 340px;
-          }
-        }
-
-        @media (max-width: 1024px) {
-          .container {
-            padding: 0 1.5rem;
-          }
-
-          section {
-            padding: 4rem 0;
-          }
-
-          .about-grid {
-            gap: 2.5rem;
-          }
-
-          .section-header {
-            margin-bottom: 3rem;
-          }
-
-          .skills-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-
-        }
-
-        /* =============================================
-           MOBILE (max 768px): Hide hero image
-           ============================================= */
-        @media (max-width: 768px) {
-          .nav-links {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            height: 100vh;
-            width: 70%;
-            max-width: 300px;
-            background: var(--dark-light);
-            flex-direction: column;
-            padding: 5rem 2rem 2rem;
-            gap: 2rem;
-            transition: right 0.3s ease;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-          }
-
-          .nav-links.active {
-            right: 0;
-          }
-
-          .nav-links a {
-            font-size: 1.1rem;
-          }
-
-          .menu-toggle {
-            display: flex;
-          }
-
-          .about-grid {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-          }
-
-          .stats {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-          }
-
-          .hero {
-            min-height: 90vh;
-            padding-top: 100px;
-          }
-
-          /* Switch hero to single column on mobile */
-          .hero-grid {
-            grid-template-columns: 1fr;
-          }
-
-          /* ✅ HIDE hero image on mobile */
-          .hero-image {
-            display: none;
-          }
-
-          .cta-buttons {
-            flex-direction: column;
-          }
-
-          .btn {
-            width: 100%;
-            max-width: 300px;
-          }
-
-          .skills-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-          }
-
-
-
-          .skill-card-new {
-            padding: 1.5rem;
-          }
-
-          .skill-icon-container {
-            padding: 1.5rem;
-          }
-
-          .skill-icon {
-            width: 70px;
-            height: 70px;
-          }
-
-          .projects-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .education-header {
-            flex-direction: column;
-          }
-
-          .education-period {
-            align-self: flex-start;
-          }
-
-          section {
-            padding: 3rem 0;
-          }
-
-          .footer-content {
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-          }
-
-          .footer-bottom {
-            flex-direction: column;
-            text-align: center;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .container {
-            padding: 0 1rem;
-          }
-
-          .nav-content {
-            padding: 1rem;
-          }
-
-          .logo {
-            font-size: 1.25rem;
-          }
-
-          .stats {
-            grid-template-columns: 1fr;
-          }
-
-          .stat-item {
-            padding: 1rem;
-          }
-
-          .skill-card,
-          .skill-card-new,
-          .project-content,
-          .education-card {
-            padding: 1.5rem;
-          }
-
-          .contact-item {
-            padding: 1rem;
-          }
-
-          .contact-icon {
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            font-size: 1rem;
-          }
-
-          .project-image {
-            height: 180px;
-          }
-
-          .section-header {
-            margin-bottom: 2rem;
-          }
-
-          .whatsapp-float {
-            width: 50px;
-            height: 50px;
-            bottom: 90px;
-            right: 20px;
-          }
-
-          .whatsapp-float svg {
-            width: 28px;
-            height: 28px;
-          }
-
-          .scroll-buttons {
-            right: 20px;
-            bottom: 20px;
-          }
-
-          .scroll-btn {
-            width: 48px;
-            height: 48px;
-            font-size: 24px;
-          }
-
-          .footer-content {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-          }
-        }
-
-        @media (max-width: 360px) {
-          .hero h1 {
-            font-size: 2rem;
-          }
-
-          .section-title {
-            font-size: 1.75rem;
-          }
-        }
-        /* Bento Grid Styles */
-        .about-bento {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 2rem;
-          margin-bottom: 3rem;
-          max-width: 1100px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-        
-        .bento-card {
-          background: rgba(26, 31, 58, 0.5);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 1.5rem;
-          padding: 2.5rem;
-          backdrop-filter: blur(10px);
-          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          position: relative;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-        
-        .bento-card::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(0, 102, 255, 0.05), rgba(0, 245, 255, 0.05));
-          opacity: 0;
-          transition: opacity 0.4s ease;
-          z-index: 0;
-        }
-        
-        .bento-card:hover {
-          transform: translateY(-8px);
-          border-color: rgba(0, 245, 255, 0.3);
-          box-shadow: 0 15px 35px rgba(0, 102, 255, 0.15);
-          background: rgba(26, 31, 58, 0.8);
-        }
-        
-        .bento-card:hover::before {
-          opacity: 1;
-        }
-        
-        .bento-card > * {
-          position: relative;
-          z-index: 1;
-        }
-        
-        .bento-header {
-          display: flex;
-          align-items: center;
-          gap: 1.25rem;
-        }
-        
-        .bento-icon-wrapper {
-          width: 54px;
-          height: 54px;
-          background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 245, 255, 0.1));
-          border: 1px solid rgba(0, 245, 255, 0.2);
-          border-radius: 14px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.5rem;
-          color: var(--secondary);
-          transition: all 0.4s ease;
-        }
-        
-        .bento-card:hover .bento-icon-wrapper {
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          color: white;
-          box-shadow: 0 8px 20px rgba(0, 102, 255, 0.4);
-          transform: scale(1.1) rotate(-5deg);
-        }
-        
-        .bento-card h3 {
-          font-size: 1.35rem;
-          font-weight: 600;
-          color: white;
-          margin: 0;
-          letter-spacing: 0.5px;
-        }
-        
-        .bento-card p {
-          margin: 0;
-          color: var(--text-dim);
-          line-height: 1.8;
-          font-size: 1.05rem;
-        }
-        
-        .bento-span-2 {
-          grid-column: span 2;
-        }
-        
-        @media (max-width: 992px) {
-          .about-bento {
-            gap: 1.5rem;
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .about-bento {
-            grid-template-columns: 1fr;
-          }
-          .bento-span-2 {
-            grid-column: span 1;
-          }
-        }
-      `}</style>
-
-      <div>
-        {/* Navigation */}
-        <nav>
-          <div className="nav-content">
-            <div className="logo">Taha Choudhary</div>
-            <div 
-              className={`menu-toggle ${menuActive ? 'active' : ''}`}
-              onClick={() => setMenuActive(!menuActive)}
-            >
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <ul className={`nav-links ${menuActive ? 'active' : ''}`}>
-              <li><Link href="#home" onClick={handleNavClick}>Home</Link></li>
-              <li><Link href="#about" onClick={handleNavClick}>About</Link></li>
-              <li><Link href="#skills" onClick={handleNavClick}>Skills</Link></li>
-              <li><Link href="#projects" onClick={handleNavClick}>Projects</Link></li>
-              <li><Link href="#education" onClick={handleNavClick}>Education</Link></li>
-              <li><Link href="#certificates" onClick={handleNavClick}>Certificates</Link></li>
-              <li><Link href="#contact" onClick={handleNavClick}>Contact</Link></li>
-            </ul>
-          </div>
-        </nav>
-
-        {/* Hero Section */}
-        <section id="home" className="hero">
-          <div className="container">
-            <div className="hero-grid">
-              <div className="hero-content">
-                <h1>
-                  Hi, I&apos;m<br /><span className="gradient-text">Taha Choudhary</span>
-                </h1>
-                <p>
-                  Trainee at Nexcore Institute of Technology, mastering AI & DS while building 
-                  beautiful web experiences with modern technologies.
-                </p>
-                <div className="cta-buttons">
-                  <Link href="#contact" className="btn btn-primary">Get In Touch</Link>
-                  <Link href="#skills" className="btn btn-secondary">View Skills</Link>
-                </div>
-              </div>
-              <div className="hero-image">
-                <img src="/Taha.png" alt="Taha Choudhary" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* About Section */}
-        <section id="about">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-tag"><i className="fa-solid fa-user"></i> Get to know me</div>
-              <h2 className="section-title">About Me</h2>
-            </div>
-            <div className="about-content">
-              <h3 style={{ textAlign: 'center', marginBottom: '2.5rem' }}>Building the Future with AI & Web Technologies</h3>
-              <div className="about-bento">
-                <div className="bento-card">
-                  <div className="bento-header">
-                    <div className="bento-icon-wrapper"><i className="fa-solid fa-graduation-cap"></i></div>
-                    <h3>Education</h3>
-                  </div>
-                  <p>
-                    Currently a trainee at <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>Nexcore Institute of Technology</span>, pursuing an intensive 3-year program in AI & Data Science (2025-2028), where I&apos;m building a strong foundation in artificial intelligence, data science, and modern software development practices.
-                  </p>
-                </div>
-                
-                <div className="bento-card">
-                  <div className="bento-header">
-                    <div className="bento-icon-wrapper"><i className="fa-solid fa-code"></i></div>
-                    <h3>Web Development</h3>
-                  </div>
-                  <p>
-                    Passionate about creating <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>beautiful, user-centric websites</span> using modern web technologies like React, Next.js, and Tailwind CSS.
-                  </p>
-                </div>
-                
-                <div className="bento-card">
-                  <div className="bento-header">
-                    <div className="bento-icon-wrapper"><i className="fa-solid fa-rocket"></i></div>
-                    <h3>Learning by Doing</h3>
-                  </div>
-                  <p>
-                    I constantly work on real-world projects that merge web development with AI capabilities to solve practical problems.
-                  </p>
-                </div>
-                
-                <div className="bento-card">
-                  <div className="bento-header">
-                    <div className="bento-icon-wrapper"><i className="fa-solid fa-pen-nib"></i></div>
-                    <h3>UI/UX Design</h3>
-                  </div>
-                  <p>
-                    Skilled in <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>Figma</span>, I bridge the gap between design and development by creating intuitive interfaces.
-                  </p>
-                </div>
-                
-                <div className="bento-card bento-span-2">
-                  <div className="bento-header" style={{ justifyContent: 'center' }}>
-                    <div className="bento-icon-wrapper"><i className="fa-solid fa-layer-group"></i></div>
-                    <h3>Full-Stack</h3>
-                  </div>
-                  <p style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
-                    Experienced with <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>frontend and backend</span> frameworks, along with CMS platforms like WordPress for rapid deployment.
-                  </p>
-                </div>
-              </div>
-              <div className="stats">
-                <div className="stat-item">
-                  <div className="stat-number">2025</div>
-                  <div className="stat-label">Started Journey</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-number">10+</div>
-                  <div className="stat-label">Technologies</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-number">3</div>
-                  <div className="stat-label">Years Program</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Skills Section */}
-        <section id="skills">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-tag"><i className="fa-solid fa-laptop-code"></i> What I know</div>
-              <h2 className="section-title">My Skills</h2>
-              <p className="section-subtitle">
-                Technologies and tools I&apos;m proficient in and continuously learning
-              </p>
-            </div>
-            <div className="skills-grid">
-              {/* HTML5 Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(227, 79, 38, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
-                      <path fill="#E44D26" d="M19.037 113.876L9.032 1.661h109.936l-10.016 112.198-45.019 12.48z"></path>
-                      <path fill="#F16529" d="M64 116.8l36.378-10.086 8.559-95.878H64z"></path>
-                      <path fill="#EBEBEB" d="M64 52.455H45.788L44.53 38.361H64V24.599H29.489l.33 3.692 3.382 37.927H64zm0 35.743l-.061.017-15.327-4.14-.979-10.975H33.816l1.928 21.609 28.193 7.826.063-.017z"></path>
-                      <path fill="#fff" d="M63.952 52.455v13.763h16.947l-1.597 17.849-15.35 4.143v14.319l28.215-7.82.207-2.325 3.234-36.233.335-3.696h-3.708zm0-27.856v13.762h33.244l.276-3.092.628-6.978.329-3.692z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <h3 className="skill-title">HTML5</h3>
-                <p className="skill-category">MARKUP</p>
-                <p className="skill-description">Semantic markup & accessibility</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#E44D26' }}>85%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '85%', background: 'linear-gradient(90deg, #E44D26, #F16529)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 6 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #E44D26, #F16529)', color: 'white' }}>Advanced</span>
-                </div>
-              </div>
-
-              {/* CSS3 Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(21, 114, 182, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
-                      <path fill="#1572B6" d="M18.814 114.123L8.76 1.352h110.48l-10.064 112.754-45.243 12.543-45.119-12.526z"></path>
-                      <path fill="#33A9DC" d="M64.001 117.062l36.559-10.136 8.601-96.354h-45.16v106.49z"></path>
-                      <path fill="#fff" d="M64.001 51.429h18.302l1.264-14.163H64.001V23.435h34.682l-.332 3.711-3.4 38.114h-30.95V51.429z"></path>
-                      <path fill="#EBEBEB" d="M64.083 87.349l-.061.018-15.403-4.159-.985-11.031H33.752l1.937 21.717 28.331 7.863.063-.018v-14.39z"></path>
-                      <path fill="#fff" d="M81.127 64.675l-1.666 18.522-15.426 4.164v14.39l28.354-7.858.208-2.337 2.406-26.881H81.127z"></path>
-                      <path fill="#EBEBEB" d="M64.048 23.435v13.831H30.64l-.277-3.108-.63-7.012-.331-3.711h34.646zm-.047 27.996v13.831H48.792l-.277-3.108-.631-7.012-.33-3.711h16.447z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <h3 className="skill-title">CSS3</h3>
-                <p className="skill-category">STYLING</p>
-                <p className="skill-description">Animations, Flexbox & Grid</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#1572B6' }}>85%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '85%', background: 'linear-gradient(90deg, #1572B6, #33A9DC)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 6 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #1572B6, #33A9DC)', color: 'white' }}>Advanced</span>
-                </div>
-              </div>
-
-              {/* Tailwind CSS Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(6, 182, 212, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
-                      <path fill="#06B6D4" d="M64.004 25.602c-17.067 0-27.73 8.53-32 25.597 6.398-8.531 13.867-11.73 22.398-9.597 4.871 1.214 8.352 4.746 12.207 8.66C72.883 56.629 80.145 64 96.004 64c17.066 0 27.73-8.531 32-25.602-6.399 8.536-13.867 11.735-22.399 9.602-4.87-1.215-8.347-4.746-12.207-8.66-6.27-6.367-13.53-13.738-29.394-13.738zM32.004 64c-17.066 0-27.73 8.531-32 25.602C6.402 81.066 13.87 77.867 22.402 80c4.871 1.215 8.352 4.746 12.207 8.66 6.274 6.367 13.536 13.738 29.395 13.738 17.066 0 27.73-8.53 32-25.597-6.399 8.531-13.867 11.73-22.399 9.597-4.87-1.214-8.347-4.746-12.207-8.66C55.128 71.371 47.868 64 32.004 64zm0 0"></path>
-                    </svg>
-                  </div>
-                </div>
-                <h3 className="skill-title">Tailwind CSS</h3>
-                <p className="skill-category">FRAMEWORK</p>
-                <p className="skill-description">Utility-first design system</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#06B6D4' }}>85%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '85%', background: 'linear-gradient(90deg, #06B6D4, #0EA5E9)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 6 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #06B6D4, #0EA5E9)', color: 'white' }}>Advanced</span>
-                </div>
-              </div>
-
-              {/* JavaScript Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(247, 223, 30, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
-                      <path fill="#F0DB4F" d="M1.408 1.408h125.184v125.185H1.408z"></path>
-                      <path fill="#323330" d="M116.347 96.736c-.917-5.711-4.641-10.508-15.672-14.981-3.832-1.761-8.104-3.022-9.377-5.926-.452-1.69-.512-2.642-.226-3.665.821-3.32 4.784-4.355 7.925-3.403 2.023.678 3.938 2.237 5.093 4.724 5.402-3.498 5.391-3.475 9.163-5.879-1.381-2.141-2.118-3.129-3.022-4.045-3.249-3.629-7.676-5.498-14.756-5.355l-3.688.477c-3.534.893-6.902 2.748-8.877 5.235-5.926 6.724-4.236 18.492 2.975 23.335 7.104 5.332 17.54 6.545 18.873 11.531 1.297 6.104-4.486 8.08-10.234 7.378-4.236-.881-6.592-3.034-9.139-6.949-4.688 2.713-4.688 2.713-9.508 5.485 1.143 2.499 2.344 3.63 4.26 5.795 9.068 9.198 31.76 8.746 35.83-5.176.165-.478 1.261-3.666.38-8.581zM69.462 58.943H57.753l-.048 30.272c0 6.438.333 12.34-.714 14.149-1.713 3.558-6.152 3.117-8.175 2.427-2.059-1.012-3.106-2.451-4.319-4.485-.333-.584-.583-1.036-.667-1.071l-9.52 5.83c1.583 3.249 3.915 6.069 6.902 7.901 4.462 2.678 10.459 3.499 16.731 2.059 4.082-1.189 7.604-3.652 9.448-7.401 2.666-4.915 2.094-10.864 2.07-17.444.06-10.735.001-21.468.001-32.237z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <h3 className="skill-title">JavaScript</h3>
-                <p className="skill-category">PROGRAMMING</p>
-                <p className="skill-description">ES6+, DOM manipulation</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#F0DB4F' }}>50%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '50%', background: 'linear-gradient(90deg, #F0DB4F, #F7DF1E)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 6 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #F0DB4F, #F7DF1E)', color: '#323330' }}>Learning</span>
-                </div>
-              </div>
-
-              {/* C Programming Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(0, 89, 157, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
-                      <path fill="#659AD3" d="M115.4 30.7L67.1 2.9c-.8-.5-1.9-.7-3.1-.7-1.2 0-2.3.3-3.1.7l-48 27.9c-1.7 1-2.9 3.5-2.9 5.4v55.7c0 1.1.2 2.4 1 3.5l106.8-62c-.6-1.2-1.5-2.1-2.4-2.7z"></path>
-                      <path fill="#03599C" d="M10.7 95.3c.5.8 1.2 1.5 1.9 1.9l48.2 27.9c.8.5 1.9.7 3.1.7 1.2 0 2.3-.3 3.1-.7l48-27.9c1.7-1 2.9-3.5 2.9-5.4V36.1c0-.9-.1-1.9-.6-2.8l-106.6 62z"></path>
-                      <path fill="#fff" d="M85.3 76.1C81.1 83.5 73.1 88.5 64 88.5c-13.5 0-24.5-11-24.5-24.5s11-24.5 24.5-24.5c9.1 0 17.1 5 21.3 12.5l13-7.5c-6.8-11.9-19.6-20-34.3-20-21.8 0-39.5 17.7-39.5 39.5s17.7 39.5 39.5 39.5c14.6 0 27.4-8 34.2-19.8l-12.9-7.6z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <h3 className="skill-title">C Programming</h3>
-                <p className="skill-category">PROGRAMMING</p>
-                <p className="skill-description">Fundamentals & syntax basics</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#03599C' }}>60%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '60%', background: 'linear-gradient(90deg, #03599C, #659AD3)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 4 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #03599C, #659AD3)', color: 'white' }}>Intermediate</span>
-                </div>
-              </div>
-
-              {/* Figma Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(242, 78, 30, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <img src="Figma.jpg" alt="Figma" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                  </div>
-                </div>
-                <h3 className="skill-title">Figma</h3>
-                <p className="skill-category">UI/UX DESIGN</p>
-                <p className="skill-description">Interface design & prototyping</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#F24E1E' }}>80%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '80%', background: 'linear-gradient(90deg, #F24E1E, #FF7262)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 5 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #F24E1E, #FF7262)', color: 'white' }}>Advanced</span>
-                </div>
-              </div>
-
-              {/* React Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(97, 218, 251, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
-                      <g fill="#61DAFB"><circle cx="64" cy="64" r="11.4"></circle><path d="M107.3 45.2c-2.2-.8-4.5-1.6-6.9-2.3.6-2.4 1.1-4.8 1.5-7.1 2.1-13.2-.2-22.5-6.6-26.1-1.9-1.1-4-1.6-6.4-1.6-7 0-15.9 5.2-24.9 13.9-9-8.7-17.9-13.9-24.9-13.9-2.4 0-4.5.5-6.4 1.6-6.4 3.7-8.7 13-6.6 26.1.4 2.3.9 4.7 1.5 7.1-2.4.7-4.7 1.4-6.9 2.3C8.2 50 1.4 56.6 1.4 64s6.9 14 19.3 18.8c2.2.8 4.5 1.6 6.9 2.3-.6 2.4-1.1 4.8-1.5 7.1-2.1 13.2.2 22.5 6.6 26.1 1.9 1.1 4 1.6 6.4 1.6 7.1 0 16-5.2 24.9-13.9 9 8.7 17.9 13.9 24.9 13.9 2.4 0 4.5-.5 6.4-1.6 6.4-3.7 8.7-13 6.6-26.1-.4-2.3-.9-4.7-1.5-7.1 2.4-.7 4.7-1.4 6.9-2.3 12.5-4.8 19.3-11.4 19.3-18.8s-6.8-14-19.3-18.8zM92.5 14.7c4.1 2.4 5.5 9.8 3.8 20.3-.3 2.1-.8 4.3-1.4 6.6-5.2-1.2-10.7-2-16.5-2.5-3.4-4.8-6.9-9.1-10.4-13 7.4-7.3 14.9-12.3 21-12.3 1.3 0 2.5.3 3.5.9zM81.3 74c-1.8 3.2-3.9 6.4-6.1 9.6-3.7.3-7.4.4-11.2.4-3.9 0-7.6-.1-11.2-.4-2.2-3.2-4.2-6.4-6-9.6-1.9-3.3-3.7-6.7-5.3-10 1.6-3.3 3.4-6.7 5.3-10 1.8-3.2 3.9-6.4 6.1-9.6 3.7-.3 7.4-.4 11.2-.4 3.9 0 7.6.1 11.2.4 2.2 3.2 4.2 6.4 6 9.6 1.9 3.3 3.7 6.7 5.3 10-1.7 3.3-3.4 6.6-5.3 10zm8.3-3.3c1.5 3.5 2.7 6.9 3.8 10.3-3.4.8-7 1.4-10.8 1.9 1.2-1.9 2.5-3.9 3.6-6 1.2-2.1 2.3-4.2 3.4-6.2zM64 97.8c-2.4-2.6-4.7-5.4-6.9-8.3 2.3.1 4.6.2 6.9.2 2.3 0 4.6-.1 6.9-.2-2.2 2.9-4.5 5.7-6.9 8.3zm-18.6-15c-3.8-.5-7.4-1.1-10.8-1.9 1.1-3.3 2.3-6.8 3.8-10.3 1.1 2 2.2 4.1 3.4 6.1 1.2 2.2 2.4 4.1 3.6 6.1zm-7-25.5c-1.5-3.5-2.7-6.9-3.8-10.3 3.4-.8 7-1.4 10.8-1.9-1.2 1.9-2.5 3.9-3.6 6-1.2 2.1-2.3 4.2-3.4 6.2zM64 30.2c2.4 2.6 4.7 5.4 6.9 8.3-2.3-.1-4.6-.2-6.9-.2-2.3 0-4.6.1-6.9.2 2.2-2.9 4.5-5.7 6.9-8.3zm22.2 21l-3.6-6c3.8.5 7.4 1.1 10.8 1.9-1.1 3.3-2.3 6.8-3.8 10.3-1.1-2.1-2.2-4.2-3.4-6.2zM31.7 35c-1.7-10.5-.3-17.9 3.8-20.3 1-.6 2.2-.9 3.5-.9 6 0 13.5 4.9 21 12.3-3.5 3.8-7 8.2-10.4 13-5.8.5-11.3 1.4-16.5 2.5-.6-2.3-1-4.5-1.4-6.6zM7 64c0-4.7 5.7-9.7 15.7-13.4 2-.8 4.2-1.5 6.4-2.1 1.6 5 3.6 10.3 6 15.6-2.4 5.3-4.5 10.5-6 15.5C15.3 75.6 7 69.6 7 64zm28.5 49.3c-4.1-2.4-5.5-9.8-3.8-20.3.3-2.1.8-4.3 1.4-6.6 5.2 1.2 10.7 2 16.5 2.5 3.4 4.8 6.9 9.1 10.4 13-7.4 7.3-14.9 12.3-21 12.3-1.3 0-2.5-.3-3.5-.9zM96.3 93c1.7 10.5.3 17.9-3.8 20.3-1 .6-2.2.9-3.5.9-6 0-13.5-4.9-21-12.3 3.5-3.8 7-8.2 10.4-13 5.8-.5 11.3-1.4 16.5-2.5.6 2.3 1 4.5 1.4 6.6zm9-15.6c-2 .8-4.2 1.5-6.4 2.1-1.6-5-3.6-10.3-6-15.6 2.4-5.3 4.5-10.5 6-15.5 13.8 4 22.1 10 22.1 15.6 0 4.7-5.8 9.7-15.7 13.4z"></path></g>
-                    </svg>
-                  </div>
-                </div>
-                <h3 className="skill-title">React</h3>
-                <p className="skill-category">LIBRARY</p>
-                <p className="skill-description">Component-based UI development</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#61DAFB' }}>70%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '70%', background: 'linear-gradient(90deg, #61DAFB, #00D8FF)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 4 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #61DAFB, #00D8FF)', color: 'white' }}>Intermediate</span>
-                </div>
-              </div>
-
-              {/* Express.js Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(0, 0, 0, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
-                      <path fill="#000000" d="M126.67 98.44c-4.56 1.16-7.38.05-9.91-3.75-5.68-8.51-11.95-16.63-18-24.9-.78-1.07-1.59-2.12-2.6-3.45C89 76 81.85 85.2 75.14 94.77c-2.4 3.42-4.92 4.91-9.4 3.7l26.92-36.13L67.6 29.71c4.31-.84 7.29-.41 9.93 3.45 5.83 8.52 12.26 16.63 18.67 25.21 6.45-8.55 12.8-16.67 18.8-25.11 2.41-3.42 5-4.72 9.33-3.46-3.28 4.35-6.49 8.63-9.72 12.88-4.36 5.73-8.64 11.53-13.16 17.14-1.61 2-1.35 3.3.09 5.19C109.9 76 118.16 87.1 126.67 98.44zM1.33 61.74c.72-3.61 1.2-7.29 2.2-10.83 6-21.43 30.6-30.34 47.5-17.06C60.93 41.64 63.39 52.62 62.9 65H7.1c-.84 22.21 15.15 35.62 35.53 28.78 7.15-2.4 11.36-8 13.47-15 1.07-3.51 2.84-4.06 6.14-3.06-1.69 8.76-5.52 16.08-13.52 20.66-12 6.86-29.13 4.64-38.14-4.89C5.26 85.89 3 78.92 2 71.39c-.15-1.2-.46-2.38-.7-3.57q.03-3.04.03-6.08zm5.87-1.49h50.43c-.33-16.06-10.33-27.47-24-27.57-15-.12-25.78 11.02-26.43 27.57z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <h3 className="skill-title">Express.js</h3>
-                <p className="skill-category">BACKEND</p>
-                <p className="skill-description">RESTful API development</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#000000' }}>65%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '65%', background: 'linear-gradient(90deg, #000000, #404040)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 3 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #000000, #404040)', color: 'white' }}>Intermediate</span>
-                </div>
-              </div>
-
-              {/* Next.js Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(0, 0, 0, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <svg viewBox="0 0 128 128" style={{ width: '100%', height: '100%' }}>
-                      <path fill="#000000" d="M64 0C28.7 0 0 28.7 0 64s28.7 64 64 64c11.2 0 21.7-2.9 30.8-7.9L48.4 55.3v36.6h-6.8V41.8h6.8l50.5 75.8C116.4 106.2 128 86.5 128 64c0-35.3-28.7-64-64-64zm22.1 84.6l-7.5-11.3V41.8h7.5v42.8z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <h3 className="skill-title">Next.js</h3>
-                <p className="skill-category">FRAMEWORK</p>
-                <p className="skill-description">React framework for production</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#000000' }}>75%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '75%', background: 'linear-gradient(90deg, #000000, #404040)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 4 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #000000, #404040)', color: 'white' }}>Advanced</span>
-                </div>
-              </div>
-
-              {/* WordPress Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(33, 117, 155, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white' }}>
-                    <img src="https://i.pinimg.com/736x/57/eb/dc/57ebdcc233373149b9780f4aa6349d8e.jpg" alt="WordPress" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                  </div>
-                </div>
-                <h3 className="skill-title">WordPress</h3>
-                <p className="skill-category">CMS PLATFORM</p>
-                <p className="skill-description">Theme customization & plugins</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#21759B' }}>80%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '80%', background: 'linear-gradient(90deg, #21759B, #23A8D8)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 5 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #21759B, #23A8D8)', color: 'white' }}>Advanced</span>
-                </div>
-              </div>
-
-              {/* MySQL Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(68, 121, 161, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white', padding: '10px' }}>
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="MySQL" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                  </div>
-                </div>
-                <h3 className="skill-title">MySQL</h3>
-                <p className="skill-category">DATABASE</p>
-                <p className="skill-description">Relational database management</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#4479A1' }}>75%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '75%', background: 'linear-gradient(90deg, #4479A1, #00758F)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 4 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #4479A1, #00758F)', color: 'white' }}>Intermediate</span>
-                </div>
-              </div>
-
-              {/* Microsoft Excel Card */}
-              <div className="skill-card-new">
-                <div className="skill-icon-container" style={{ background: 'rgba(33, 115, 70, 0.1)' }}>
-                  <div className="skill-icon" style={{ background: 'white', padding: '10px' }}>
-                    <img src="https://img.icons8.com/color/512/ms-excel.png" alt="Microsoft Excel" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                  </div>
-                </div>
-                <h3 className="skill-title">Microsoft Excel</h3>
-                <p className="skill-category">DATA ANALYSIS</p>
-                <p className="skill-description">Spreadsheets & data management</p>
-                <div className="skill-proficiency">
-                  <span className="proficiency-label">Proficiency</span>
-                  <span className="proficiency-value" style={{ color: '#217346' }}>85%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '85%', background: 'linear-gradient(90deg, #217346, #107C41)' }}></div>
-                </div>
-                <div className="skill-footer">
-                  <span className="skill-duration">⏱ 6 Months</span>
-                  <span className="skill-level" style={{ background: 'linear-gradient(135deg, #217346, #107C41)', color: 'white' }}>Advanced</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Projects Section */}
-        <section id="projects">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-tag"><i className="fa-solid fa-briefcase"></i> What I&apos;ve built</div>
-              <h2 className="section-title">My Projects</h2>
-              <p className="section-subtitle">
-                A collection of my recent work and side projects
-              </p>
-            </div>
-            <div className="projects-grid">
-              {/* Project 1 */}
-              <div className="project-card">
-                <div className="project-image" style={{ padding: 0 }}>
-                  <img src="Wanderlust.png" alt="Wanderlust Travel Website" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '1.5rem 1.5rem 0 0' }} />
-                </div>
-                <div className="project-content">
-                  <h3 className="project-title">Wanderlust Travel Website</h3>
-                  <p className="project-description">
-                    A stunning travel website featuring the Wanderlust brand with beautiful beach imagery. 
-                    Built with HTML, CSS, and Tailwind CSS featuring smooth animations and responsive design.
-                  </p>
-                  <div className="project-tags">
-                    <span className="project-tag">HTML</span>
-                    <span className="project-tag">CSS</span>
-                    <span className="project-tag">Tailwind</span>
-                    <span className="project-tag">Responsive</span>
-                  </div>
-                  <div className="project-links">
-                    <a href="/Wanderlust.html" target="_blank" rel="noopener noreferrer" className="project-link">View Project</a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Project 2 */}
-              <div className="project-card">
-                <div className="project-image" style={{ padding: 0, background: '#1E1E1E' }}>
-                  <img src="Figmaw.png" alt="Figma Design System" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '1.5rem 1.5rem 0 0' }} />
-                </div>
-                <div className="project-content">
-                  <h3 className="project-title">Design System</h3>
-                  <p className="project-description">
-                    Created a comprehensive design system in Figma with reusable components, 
-                    color palettes, and typography guidelines.
-                  </p>
-                  <div className="project-tags">
-                    <span className="project-tag">Figma</span>
-                    <span className="project-tag">UI/UX</span>
-                    <span className="project-tag">Design</span>
-                  </div>
-                  <div className="project-links">
-                    <Link href="https://www.figma.com/design/g7i00edInUl6SZaVBy0XTW/Taha-Choudhary?node-id=0-1&t=OnaTT0PVmaTgfYTn-1" target="_blank" rel="noopener noreferrer" className="project-link">View in Figma</Link>
-                  </div>
-                </div>
-              </div>
-
-              {/* Project 3 */}
-              <div className="project-card">
-                <div className="project-image" style={{ padding: 0 }}>
-                  <img src="/downtown.png" alt="Downtown Boutique" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '1.5rem 1.5rem 0 0' }} />
-                </div>
-                <div className="project-content">
-                  <h3 className="project-title">Downtown Boutique</h3>
-                  <p className="project-description">
-                    A premium modern luxury menswear boutique website. Features a sleek, sophisticated UI designed for discerning individuals seeking everyday style and comfort.
-                  </p>
-                  <div className="project-tags">
-                    <span className="project-tag">Next.js</span>
-                    <span className="project-tag">React</span>
-                    <span className="project-tag">MongoDB</span>
-                  </div>
-                  <div className="project-links">
-                    <a href="https://downtownboutique.in/" target="_blank" rel="noopener noreferrer" className="project-link">View Project</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Education Section */}
-        <section id="education">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-tag"><i className="fa-solid fa-graduation-cap"></i> Learning journey</div>
-              <h2 className="section-title">Education</h2>
-            </div>
-            <div className="timeline">
-              {/* AI ML Training Card */}
-              <div className="timeline-item">
-                <div className="timeline-dot"></div>
-                <div className="education-card">
-                  <div className="education-header">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-                      <div style={{ width: '64px', height: '64px', background: 'rgba(255,255,255,0.03)', borderRadius: '1rem', padding: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <img src="/NIT.png" alt="Nexcore Institute" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                      </div>
-                      <div>
-                        <h3 className="education-title">AI & Data Science Training</h3>
-                        <div className="education-institution">Nexcore Institute of Technology</div>
-                      </div>
-                    </div>
-                    <div className="education-period">2025 - 2028</div>
-                  </div>
-                  <p className="education-description">
-                    Comprehensive training program focused on Artificial Intelligence and Data Science. 
-                    The curriculum covers fundamental concepts, practical applications, and hands-on projects 
-                    in AI/DS technologies. Alongside AI/DS, I&apos;ve been building a strong foundation in modern 
-                    web development technologies including React, Next.js, Tailwind CSS, and Figma for design.
-                  </p>
-                </div>
-              </div>
-
-              {/* HSC Education Card */}
-              <div className="timeline-item">
-                <div className="timeline-dot"></div>
-                <div className="education-card">
-                  <div className="education-header">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-                      <div style={{ width: '64px', height: '64px', background: 'rgba(255,255,255,0.03)', borderRadius: '1rem', padding: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <img src="./clg.png" alt="Marceline College" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                      </div>
-                      <div>
-                        <h3 className="education-title">Higher Secondary Certificate (HSC)</h3>
-                        <div className="education-institution">Marceline Junior College</div>
-                      </div>
-                    </div>
-                    <div className="education-period">2023 - 2024</div>
-                  </div>
-                  <p className="education-description">
-                    Completed Higher Secondary Certificate (12th grade) with a focus on Commerce stream. 
-                    This foundation provided essential knowledge in business, economics, and analytical thinking, 
-                    which complements my technical skills in full-stack development and artificial intelligence.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Certificates Section */}
-        <section id="certificates">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-tag"><i className="fa-solid fa-certificate"></i> Achievements</div>
-              <h2 className="section-title">Certificates</h2>
-              <p className="section-subtitle">
-                Professional certifications and course completions
-              </p>
-            </div>
-            <div className="certificates-grid">
-              {/* Certificate 1 */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/certificates/teaching-ai-fluency-framework.png',
-                title: 'Teaching the AI Fluency Framework',
-                issuer: 'ANTHROPIC',
-                date: '2026',
-                description: 'Completed comprehensive training on teaching AI fluency concepts and frameworks. This certification demonstrates proficiency in educating others about artificial intelligence, machine learning fundamentals, and responsible AI practices. Learned effective pedagogical approaches for making AI concepts accessible to diverse audiences.',
-                skills: ['AI Education', 'Teaching Methods', 'AI Ethics', 'Curriculum Design']
-              })}>
-                <div className="certificate-image">
-                  <img src="/certificates/teaching-ai-fluency-framework.png" alt="Teaching the AI Fluency Framework" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">Teaching the AI Fluency Framework</h3>
-                  <p className="certificate-issuer">ANTHROPIC</p>
-                  <p className="certificate-date">2026</p>
-                  <p className="certificate-description">Training on teaching AI fluency concepts and frameworks to diverse audiences.</p>
-                </div>
-              </div>
-
-              {/* Certificate 2 */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/Claude 101.png',
-                title: 'Claude 101',
-                issuer: 'ANTHROPIC',
-                date: '2026',
-                description: 'Foundational course on Claude AI assistant, covering core capabilities, best practices for prompt engineering, and effective ways to leverage AI for various tasks. Gained hands-on experience with Claude\'s features including conversation, analysis, coding assistance, and creative writing. Learned to craft effective prompts and understand AI limitations.',
-                skills: ['Prompt Engineering', 'AI Interaction', 'Claude AI', 'Conversational AI']
-              })}>
-                <div className="certificate-image">
-                  <img src="/Claude 101.png" alt="Claude 101" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">Claude 101</h3>
-                  <p className="certificate-issuer">ANTHROPIC</p>
-                  <p className="certificate-date">2026</p>
-                  <p className="certificate-description">Foundational training on Claude AI capabilities and prompt engineering techniques.</p>
-                </div>
-              </div>
-
-              {/* Certificate 3 */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/AI Fluency for Educators.png',
-                title: 'AI Fluency for Educators',
-                issuer: 'ANTHROPIC',
-                date: '2026',
-                description: 'Specialized program designed for educators to integrate AI tools into teaching practices. Covered practical applications of AI in education, ethical considerations, student engagement strategies, and methods to enhance learning outcomes. Explored how to prepare students for an AI-driven future while maintaining academic integrity.',
-                skills: ['Educational Technology', 'AI in Education', 'Student Engagement', 'Digital Literacy']
-              })}>
-                <div className="certificate-image">
-                  <img src="/AI Fluency for Educators.png" alt="AI Fluency for Educators" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">AI Fluency for Educators</h3>
-                  <p className="certificate-issuer">ANTHROPIC</p>
-                  <p className="certificate-date">2026</p>
-                  <p className="certificate-description">Specialized training for integrating AI tools into educational practices and curriculum.</p>
-                </div>
-              </div>
-
-              {/* Certificate 4 */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/AI Fluency for Non Profits.png',
-                title: 'AI Fluency for Nonprofits',
-                issuer: 'ANTHROPIC & GIVINGTUESDAY',
-                date: '2026',
-                description: 'Focused training on leveraging AI technologies for nonprofit organizations and social impact initiatives. Learned how to use AI for fundraising, donor engagement, program optimization, and operational efficiency. Explored ethical AI use in the nonprofit sector and strategies for maximizing social impact with limited resources.',
-                skills: ['Social Impact', 'Nonprofit Management', 'AI Strategy', 'Community Engagement']
-              })}>
-                <div className="certificate-image">
-                  <img src="/AI Fluency for Non Profits.png" alt="AI Fluency for Nonprofits" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">AI Fluency for Nonprofits</h3>
-                  <p className="certificate-issuer">ANTHROPIC & GIVINGTUESDAY</p>
-                  <p className="certificate-date">2026</p>
-                  <p className="certificate-description">Training on using AI for social impact and nonprofit organizational efficiency.</p>
-                </div>
-              </div>
-
-              {/* Certificate 5 */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/AI Fluency for Students.png',
-                title: 'AI Fluency for Students',
-                issuer: 'ANTHROPIC',
-                date: '2026',
-                description: 'Student-focused program covering AI fundamentals, practical applications for learning and research, and responsible AI usage. Learned how to use AI tools for studying, project work, creative endeavors, and career preparation. Emphasized critical thinking about AI outputs and understanding AI\'s role in future careers.',
-                skills: ['AI Literacy', 'Research Skills', 'Critical Thinking', 'Digital Skills']
-              })}>
-                <div className="certificate-image">
-                  <img src="/AI Fluency for Students.png" alt="AI Fluency for Students" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">AI Fluency for Students</h3>
-                  <p className="certificate-issuer">ANTHROPIC</p>
-                  <p className="certificate-date">2026</p>
-                  <p className="certificate-description">Comprehensive AI training for students covering fundamentals and practical applications.</p>
-                </div>
-              </div>
-
-              {/* Certificate 6 */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/CERTIFICATE.png',
-                title: 'AI Fluency: Framework & Foundations',
-                issuer: 'ANTHROPIC',
-                date: '2026',
-                description: 'Core certification covering the foundational framework of AI fluency. Explored AI concepts, machine learning basics, neural networks, natural language processing, and the broader implications of AI in society. Developed a comprehensive understanding of AI capabilities, limitations, and ethical considerations for responsible AI deployment.',
-                skills: ['AI Fundamentals', 'Machine Learning', 'NLP', 'AI Ethics']
-              })}>
-                <div className="certificate-image">
-                  <img src="/CERTIFICATE.png" alt="AI Fluency: Framework & Foundations" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">AI Fluency: Framework & Foundations</h3>
-                  <p className="certificate-issuer">ANTHROPIC</p>
-                  <p className="certificate-date">2026</p>
-                  <p className="certificate-description">Core certification in AI fundamentals, frameworks, and foundational concepts.</p>
-                </div>
-              </div>
-
-              {/* Certificate 7 */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/Certificate Of Participitation.png',
-                title: 'AI For All - AI Appreciate',
-                issuer: 'Intel & Digital India',
-                date: 'January 12, 2026',
-                description: 'Participated in Intel\'s AI For All initiative in collaboration with Digital India, completing the AI Appreciate stage. This program introduced fundamental AI concepts, explored AI applications across industries, and emphasized India\'s role in the global AI landscape. Gained awareness of AI\'s potential to drive digital transformation and innovation.',
-                skills: ['AI Awareness', 'Digital Transformation', 'Industry Applications', 'Innovation']
-              })}>
-                <div className="certificate-image">
-                  <img src="/Certificate Of Participitation.png" alt="AI For All - AI Appreciate" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">AI For All - AI Appreciate</h3>
-                  <p className="certificate-issuer">Intel & Digital India</p>
-                  <p className="certificate-date">January 12, 2026</p>
-                  <p className="certificate-description">Intel's AI awareness program focusing on AI fundamentals and digital transformation.</p>
-                </div>
-              </div>
-
-              {/* Certificate 8 */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/CERTIFICATE.png',
-                title: 'Yuva AI For ALL - English',
-                issuer: 'AISECT LEARN',
-                date: 'January 21, 2026',
-                description: 'Successfully completed the Yuva AI For ALL program offered by AISECT LEARN, a youth-focused initiative to democratize AI education. This course covered AI basics, practical applications, and career opportunities in the AI field. Designed to empower young learners with essential AI skills for the future job market.',
-                skills: ['AI Basics', 'Youth Empowerment', 'Career Development', 'Future Skills']
-              })}>
-                <div className="certificate-image">
-                  <img src="/CERTIFICATE.png" alt="Yuva AI For ALL - English" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">Yuva AI For ALL - English</h3>
-                  <p className="certificate-issuer">AISECT LEARN</p>
-                  <p className="certificate-date">January 21, 2026</p>
-                  <p className="certificate-description">Youth-focused AI education program covering basics and career opportunities.</p>
-                </div>
-              </div>
-
-              {/* Certificate 9 - Attendance Excellence Award */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/certificates/attendance-excellence-award.png',
-                title: 'Certificate of Attendance Excellent Award',
-                issuer: 'NEXCORE INSTITUTE OF TECHNOLOGY',
-                date: 'June 06, 2026',
-                description: 'Awarded for achieving the highest attendance in the First Year of AI & Data Science at Nexcore Institute of Technology. This certificate recognizes outstanding punctuality, dedication, discipline, and consistent presence throughout the entire academic year — reflecting sincerity, responsibility, and a positive attitude towards learning.',
-                skills: ['Discipline', 'Punctuality', 'AI & Data Science', 'First Year']
-              })}>
-                <div className="certificate-image">
-                  <img src="/certificates/attendance-excellence-award.png" alt="Certificate of Attendance Excellent Award" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">Certificate of Attendance Excellent Award</h3>
-                  <p className="certificate-issuer">NEXCORE INSTITUTE OF TECHNOLOGY</p>
-                  <p className="certificate-date">June 06, 2026</p>
-                  <p className="certificate-description">Awarded for highest attendance in First Year AI & Data Science, recognizing dedication and punctuality.</p>
-                </div>
-              </div>
-
-              {/* Certificate 10 - Certificate of Innovation Hackathon */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/certificates/certificate-of-innovation-hackathon.png',
-                title: 'Certificate of Innovation — NIT-CoDeX Hackathon',
-                issuer: 'NEXCORE INSTITUTE OF TECHNOLOGY',
-                date: 'May 23, 2026',
-                description: 'Received the prestigious "Idea to Impact Award" at the NIT-CoDeX Hackathon 2026 Season 1 for outstanding creativity and innovation. Awarded to Team Errorists (Mohd Taha Choudhary) for demonstrating exceptional ability to turn ideas into impactful solutions through strong problem-solving skills and creative thinking during the first-ever hackathon.',
-                skills: ['Innovation', 'Problem Solving', 'Hackathon', 'Creative Thinking']
-              })}>
-                <div className="certificate-image">
-                  <img src="/certificates/certificate-of-innovation-hackathon.png" alt="Certificate of Innovation — NIT-CoDeX Hackathon" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">Certificate of Innovation — NIT-CoDeX Hackathon</h3>
-                  <p className="certificate-issuer">NEXCORE INSTITUTE OF TECHNOLOGY</p>
-                  <p className="certificate-date">May 23, 2026</p>
-                  <p className="certificate-description">Received the "Idea to Impact Award" at NIT-CoDeX Hackathon 2026 for outstanding innovation with Team Errorists.</p>
-                </div>
-              </div>
-
-              {/* Certificate 11 - Shark Tank AIKTC Participation */}
-              <div className="certificate-card" onClick={() => setSelectedCertificate({
-                image: '/certificates/shark-tank-participation.png',
-                title: 'Certificate of Participation — Shark Tank AIKTC',
-                issuer: "ANJUMAN-I-ISLAM'S KALSEKAR TECHNICAL CAMPUS",
-                date: 'August 21–22, 2026',
-                description: "Participated in Shark Tank AIKTC 2026, organized by E-Cell AIKTC in collaboration with the Kalsekar Incubation Centre, held at Anjuman-I-Islam's Kalsekar Technical Campus on 21st and 22nd August 2026. Recognized for active participation, valuable contribution, and enthusiastic support as part of Team X Factors (Taha Choudhary).",
-                skills: ['Entrepreneurship', 'Startup Pitch', 'Innovation', 'E-Cell']
-              })}>
-                <div className="certificate-image">
-                  <img src="/certificates/shark-tank-participation.png" alt="Certificate of Participation — Shark Tank AIKTC" />
-                </div>
-                <div className="certificate-content">
-                  <h3 className="certificate-title">Certificate of Participation — Shark Tank AIKTC</h3>
-                  <p className="certificate-issuer">ANJUMAN-I-ISLAM&apos;S KALSEKAR TECHNICAL CAMPUS</p>
-                  <p className="certificate-date">August 21–22, 2026</p>
-                  <p className="certificate-description">Participated in Shark Tank AIKTC 2026 with Team X Factors, organized by E-Cell AIKTC and Kalsekar Incubation Centre.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Section */}
-        <section id="contact">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-tag"><i className="fa-solid fa-envelope"></i> Let&apos;s connect</div>
-              <h2 className="section-title">Get In Touch</h2>
-            </div>
-            <div className="contact-info">
-              <h3>Let&apos;s Work Together</h3>
-              <p>
-                I&apos;m always interested in hearing about new projects and opportunities. 
-                Whether you have a question or just want to say hi, feel free to reach out!
-              </p>
-              <div className="contact-methods">
-                <Link href="mailto:tahachoudhary54@gmail.com" className="contact-item" style={{ textDecoration: 'none', cursor: 'pointer' }}>
-                  <div className="contact-icon" style={{ background: 'white', padding: '0.5rem' }}>
-                    <img src="/mail.jpg" alt="Email" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                  </div>
-                  <div className="contact-item-content">
-                    <h4>Email</h4>
-                    <p>tahachoudhary54@gmail.com</p>
-                  </div>
-                </Link>
-                <Link href="https://www.linkedin.com/in/taha-choudhary-3aa283358" target="_blank" rel="noopener noreferrer" className="contact-item" style={{ textDecoration: 'none', cursor: 'pointer' }}>
-                  <div className="contact-icon" style={{ background: 'white', padding: '0.5rem' }}>
-                    <img src="/LinkedIn.jpg" alt="LinkedIn" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                  </div>
-                  <div className="contact-item-content">
-                    <h4>LinkedIn</h4>
-                    <p>linkedin.com/in/taha-choudhary</p>
-                  </div>
-                </Link>
-                <Link href="https://github.com/tahachoudhary54" target="_blank" rel="noopener noreferrer" className="contact-item" style={{ textDecoration: 'none', cursor: 'pointer' }}>
-                  <div className="contact-icon" style={{ background: 'white', padding: '0.5rem' }}>
-                    <img src="/GitHub.jpg" alt="GitHub" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                  </div>
-                  <div className="contact-item-content">
-                    <h4>GitHub</h4>
-                    <p>github.com/tahachoudhary54</p>
-                  </div>
-                </Link>
-                <Link href="https://www.instagram.com/taha_choudhary_19/" target="_blank" rel="noopener noreferrer" className="contact-item" style={{ textDecoration: 'none', cursor: 'pointer' }}>
-                  <div className="contact-icon" style={{ background: 'linear-gradient(135deg, #E1306C, #C13584, #833AB4, #5851DB, #405DE6)', padding: '0.5rem' }}>
-                    <svg viewBox="0 0 24 24" fill="white" style={{ width: '100%', height: '100%' }}>
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                  </div>
-                  <div className="contact-item-content">
-                    <h4>Instagram</h4>
-                    <p>@taha_choudhary_19</p>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer>
-          <div className="container">
-            <div className="footer-content">
-              <div className="footer-section">
-                <div className="footer-logo">TC</div>
-                <p className="footer-tagline">Building the future with AI & Web Technologies</p>
-                <div className="footer-social">
-                  <Link href="https://github.com/tahachoudhary54" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                  </Link>
-                  <Link href="https://www.linkedin.com/in/taha-choudhary-3aa283358" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                    </svg>
-                  </Link>
-                  <Link href="https://www.instagram.com/taha_choudhary_19/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                  </Link>
-                  <Link href="https://mail.google.com/mail/u/0/?ogbl#inbox" aria-label="Email">
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                    </svg>
-                  </Link>
-                </div>
-              </div>
-
-              <div className="footer-section">
-                <h4>Quick Links</h4>
-                <ul className="footer-links">
-                  <li><Link href="#home">Home</Link></li>
-                  <li><Link href="#about">About</Link></li>
-                  <li><Link href="#skills">Skills</Link></li>
-                  <li><Link href="#projects">Projects</Link></li>
-                </ul>
-              </div>
-
-              <div className="footer-section">
-                <h4>Connect</h4>
-                <ul className="footer-links">
-                  <li><Link href="#education">Education</Link></li>
-                  <li><Link href="#certificates">Certificates</Link></li>
-                  <li><Link href="#contact">Contact</Link></li>
-                  <li><Link href="https://github.com/tahachoudhary54" target="_blank" rel="noopener noreferrer">GitHub</Link></li>
-                  <li><Link href="https://www.linkedin.com/in/taha-choudhary-3aa283358" target="_blank" rel="noopener noreferrer">LinkedIn</Link></li>
-                </ul>
-              </div>
-
-
-              <div className="footer-section">
-                <h4>Get In Touch</h4>
-                <ul className="footer-contact">
-                  <li>
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                    </svg>
-                    <Link href="mailto:tahachoudhary54@gmail.com">tahachoudhary54@gmail.com</Link>
-                  </li>
-                  <li>
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                    </svg>
-                    <span>Mumbai, India</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="footer-bottom">
-              <p>© 2026 Taha Choudhary. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
-
-        {/* Sticky WhatsApp Button */}
-        <Link 
-          href="https://wa.me/919987343330" 
-          className="whatsapp-float" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          aria-label="Chat on WhatsApp"
-        >
-          <svg viewBox="0 0 24 24" fill="white">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-          </svg>
-        </Link>
-
-        {/* Scroll Button */}
-        <div className="scroll-buttons">
-          <button 
-            onClick={handleScroll}
-            className="scroll-btn"
-            aria-label={isAtTop ? "Scroll to bottom" : "Scroll to top"}
+      {/* ── Scroll Progress ── */}
+      <div ref={scrollProgressRef} className="scroll-progress" style={{ transform: "scaleX(0)" }} aria-hidden="true" />
+
+      {/* ══════════════════════════════════════════
+          NAVIGATION
+      ══════════════════════════════════════════ */}
+      <nav className={`nav ${scrolled ? "scrolled" : ""}`} role="navigation" aria-label="Main navigation">
+        <div className="container nav-inner">
+          <a href="#home" className="nav-logo" onClick={() => setMenuOpen(false)}>
+            Taha <span>Choudhary</span>
+          </a>
+
+          <ul className="nav-links" role="list">
+            {["about", "skills", "projects", "education", "certificates", "contact"].map((id) => (
+              <li key={id}>
+                <a href={`#${id}`}>{id.charAt(0).toUpperCase() + id.slice(1)}</a>
+              </li>
+            ))}
+          </ul>
+
+          <button
+            className={`hamburger ${menuOpen ? "open" : ""}`}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
           >
-            {isAtTop ? <span style={{ fontWeight: 900, fontSize: '28px' }}>▼</span> : <span style={{ fontWeight: 900, fontSize: '28px' }}>▲</span>}
+            <span />
+            <span />
+            <span />
           </button>
         </div>
+      </nav>
 
-        {/* Certificate Modal */}
-        {selectedCertificate && (
-          <div className="certificate-modal" onClick={() => setSelectedCertificate(null)}>
-            <div className="certificate-modal-content" onClick={(e) => e.stopPropagation()}>
-              <button 
-                className="certificate-modal-close"
-                onClick={() => setSelectedCertificate(null)}
-                aria-label="Close modal"
-              >
-                ×
-              </button>
-              <div className="certificate-modal-image">
-                <div
-                  className="certificate-modal-image-scroll"
-                  onWheel={handleWheelZoom}
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                  onTouchCancel={handleTouchEnd}
-                  onDoubleClick={handleDoubleClick}
-                  style={{ cursor: zoomLevel > 1 ? 'grab' : 'zoom-in' }}
-                >
-                  <img
-                    src={selectedCertificate.image}
-                    alt={selectedCertificate.title}
-                    style={{ 
-                      transform: `scale(${zoomLevel})`,
-                      transition: isPinching ? 'none' : 'transform 0.2s ease-out'
-                    }}
-                  />
-                </div>
+      {/* Mobile Nav */}
+      <div className={`mobile-nav ${menuOpen ? "open" : ""}`} role="dialog" aria-label="Mobile menu">
+        {["home", "about", "skills", "projects", "education", "certificates", "contact"].map((id) => (
+          <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>
+            {id.charAt(0).toUpperCase() + id.slice(1)}
+          </a>
+        ))}
+      </div>
+
+      {/* ══════════════════════════════════════════
+          HERO
+      ══════════════════════════════════════════ */}
+      <section id="home" className="hero" aria-label="Hero section">
+        {/* Background */}
+        <div className="hero-bg" aria-hidden="true">
+          <div className="hero-orb hero-orb-1" />
+          <div className="hero-orb hero-orb-2" />
+          {/* Subtle violet ambient glow behind portrait */}
+          <div className="hero-orb hero-orb-portrait" aria-hidden="true" />
+          <ParticleCanvas />
+        </div>
+
+        <div className="container hero-content hero-two-col">
+
+          {/* LEFT — Text */}
+          <div className="hero-left">
+            {/* Headline */}
+            <h1
+              ref={heroTitleRef}
+              className="hero-title display-xl"
+              style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)" }}
+            >
+              <span className="hero-title-line">
+                <span className="hero-title-inner">Taha</span>
+              </span>
+              <span className="hero-title-line">
+                <span className="hero-title-inner accent" style={{ WebkitTextStroke: "1px var(--accent)", WebkitTextFillColor: "transparent" }}>
+                  Choudhary
+                </span>
+              </span>
+            </h1>
+
+            {/* Subtitle */}
+            <div ref={heroSubtitleRef} className="hero-subtitle">
+              <span className="hero-subtitle-line" aria-hidden="true" />
+              <p className="hero-subtitle-text">
+                AI &amp; Data Science Student · Web Developer · UI/UX Designer
+              </p>
+            </div>
+
+            {/* Description */}
+            <p
+              ref={heroActionsRef}
+              style={{ display: "block", maxWidth: "480px", color: "var(--text-2)", fontSize: "clamp(0.9rem, 1.2vw, 1.05rem)", lineHeight: "1.75", marginTop: "1.5rem", opacity: 0, transform: "translateY(30px)" }}
+            >
+              Trainee at Nexcore Institute of Technology, mastering AI {'&'} DS while building
+              beautiful web experiences with modern technologies.
+            </p>
+
+            {/* Actions */}
+            <div
+              ref={heroCtasRef}
+              style={{ display: "flex", gap: "1rem", marginTop: "2.5rem", flexWrap: "wrap", opacity: 0, transform: "translateY(30px)" }}
+            >
+              <a href="#projects" className="btn-primary">
+                <span>View My Work</span>
+                <ArrowRight size={16} />
+              </a>
+              <a href="#contact" className="btn-ghost">
+                <span>Get In Touch</span>
+              </a>
+            </div>
+          </div>
+
+          {/* RIGHT — Portrait */}
+          <div
+            ref={heroPortraitRef}
+            className="hero-portrait-wrap"
+            style={{ opacity: 0, transform: "translateY(20px) scale(0.98)" }}
+            aria-hidden="true"
+          >
+            <img
+              src="/Taha.png"
+              alt="Taha Choudhary"
+              className="hero-portrait-img"
+            />
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* ══════════════════════════════════════════
+          ABOUT
+      ══════════════════════════════════════════ */}
+      <section id="about" className="section-pad" aria-label="About section">
+        <div className="container">
+          <div className="about-grid-rebalanced">
+            {/* Left — text block */}
+            <div className="about-text">
+              <div ref={addRevealRef} className="section-label reveal-up" data-delay="0">
+                About Me
               </div>
-              <div className="certificate-modal-details">
-                <h2 className="certificate-modal-title">{selectedCertificate.title}</h2>
-                <p className="certificate-modal-issuer">{selectedCertificate.issuer}</p>
-                <p className="certificate-modal-date">{selectedCertificate.date}</p>
-                <p className="certificate-modal-description">{selectedCertificate.description}</p>
-                <div className="certificate-modal-skills">
-                  {selectedCertificate.skills.map((skill, index) => (
-                    <span key={index} className="certificate-skill-tag">{skill}</span>
-                  ))}
+              <h2
+                ref={addRevealRef}
+                className="display-md reveal-up"
+                data-delay="80"
+                style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)", color: "var(--text-1)", marginBottom: "2rem" }}
+              >
+                Building the Future with AI &amp; Web Technologies
+              </h2>
+              <div ref={addRevealRef} className="reveal-up" data-delay="160">
+                <p>
+                  I&apos;m <strong style={{ color: "var(--text-1)" }}>Taha Choudhary</strong>, a trainee at{" "}
+                  <strong style={{ color: "var(--accent)" }}>Nexcore Institute of Technology</strong>, pursuing an intensive
+                  3-year program in AI &amp; Data Science (2025–2028). I&apos;m building a strong foundation
+                  in artificial intelligence, data science, and modern software development practices.
+                </p>
+                <p>
+                  Passionate about creating{" "}
+                  <strong style={{ color: "var(--text-1)" }}>beautiful, user-centric websites</strong> using React,
+                  Next.js, and Tailwind CSS. I bridge the gap between design and development by working in
+                  Figma to craft intuitive interfaces before bringing them to life in code.
+                </p>
+                <p>
+                  I constantly work on real-world projects that merge web development with AI capabilities
+                  to solve practical problems — from travel websites to luxury e-commerce platforms.
+                </p>
+              </div>
+
+              <div ref={addRevealRef} className="reveal-up" data-delay="240" style={{ marginTop: "2rem" }}>
+                <a href="#contact" className="btn-primary">
+                  <span>Get In Touch</span>
+                  <ArrowRight size={16} />
+                </a>
+              </div>
+            </div>
+
+            {/* Right — stats */}
+            <div ref={addRevealRef} className="about-stats-col reveal-right" data-delay="200">
+              <div className="about-stats">
+                <div>
+                  <div className="about-stat-num">10<span className="accent">+</span></div>
+                  <div className="about-stat-label">Technologies</div>
+                </div>
+                <div>
+                  <div className="about-stat-num">3<span className="accent">+</span></div>
+                  <div className="about-stat-label">Live Projects</div>
+                </div>
+                <div>
+                  <div className="about-stat-num">11<span className="accent">+</span></div>
+                  <div className="about-stat-label">Certificates</div>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          SKILLS
+      ══════════════════════════════════════════ */}
+      <section id="skills" aria-label="Skills section">
+
+        {/* Skills grid */}
+        <div className="section-pad">
+          <div className="container">
+            <div ref={addRevealRef} className="section-label reveal-up" data-delay="0">
+              What I Know
+            </div>
+            <h2
+              ref={addRevealRef}
+              className="display-md reveal-up"
+              data-delay="100"
+              style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)", color: "var(--text-1)", marginBottom: "3rem" }}
+            >
+              My Skills
+            </h2>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+                gap: "1rem",
+              }}
+            >
+              {SKILLS.map((skill, i) => (
+                <div
+                  key={skill.name}
+                  ref={addRevealRef}
+                  className="skill-card reveal-up"
+                  data-delay={`${(i % 4) * 80}`}
+                >
+                  <div className="skill-card-top">
+                    <span className="skill-card-name" style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)" }}>
+                      {skill.name}
+                    </span>
+                    <span className="skill-card-level">{skill.level}</span>
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--text-3)", marginBottom: "1rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    {skill.category}
+                  </div>
+                  <div className="skill-bar-bg">
+                    <div
+                      className="skill-bar-fill"
+                      ref={(el) => { skillBarsRef.current[i] = el; }}
+                      style={{ width: `${skill.pct}%` }}
+                    />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.5rem" }}>
+                    <span style={{ fontSize: "0.7rem", color: "var(--text-3)" }}>Proficiency</span>
+                    <span style={{ fontSize: "0.8rem", fontWeight: 700, color: skill.color }}>{skill.pct}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          PROJECTS
+      ══════════════════════════════════════════ */}
+      <section id="projects" className="section-pad" aria-label="Projects section">
+        <div className="container">
+          <div ref={addRevealRef} className="section-label reveal-up" data-delay="0">
+            What I&apos;ve Built
+          </div>
+          <h2
+            ref={addRevealRef}
+            className="display-md reveal-up"
+            data-delay="100"
+            style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)", color: "var(--text-1)", marginBottom: "0.75rem" }}
+          >
+            Selected Projects
+          </h2>
+          <p
+            ref={addRevealRef}
+            className="reveal-up body-lg"
+            data-delay="150"
+            style={{ marginBottom: "3rem", maxWidth: "480px" }}
+          >
+            A collection of recent work spanning web development, UI/UX design, and AI-powered experiences.
+          </p>
+
+          {/* Project feature cards */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+              gap: "1.5rem",
+            }}
+          >
+            {PROJECTS.map((project, i) => (
+              <a
+                key={project.id}
+                href={project.link}
+                target={project.external ? "_blank" : "_self"}
+                rel={project.external ? "noopener noreferrer" : undefined}
+                ref={addRevealRef}
+                className="project-card-lg reveal-up"
+                data-delay={`${i * 100}`}
+                aria-label={`View ${project.name} project`}
+              >
+                <div className="project-card-img">
+                  <img src={project.image} alt={project.name} loading="lazy" />
+                  <div className="project-card-img-overlay" aria-hidden="true" />
+                </div>
+                <div className="project-card-body">
+                  <div className="project-card-number">{project.id}</div>
+                  <h3 className="project-card-title" style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)" }}>
+                    {project.name}
+                  </h3>
+                  <p className="project-card-text">{project.description}</p>
+                  <div className="project-card-footer">
+                    <div className="project-card-tags">
+                      {project.tags.map((tag) => (
+                        <span key={tag} className="project-tag-inline">{tag}</span>
+                      ))}
+                    </div>
+                    <div
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "50%",
+                        border: "1px solid var(--border-2)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        transition: "all 0.3s ease",
+                        color: "var(--text-2)",
+                      }}
+                      aria-hidden="true"
+                    >
+                      <ArrowRight size={14} />
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          EDUCATION
+      ══════════════════════════════════════════ */}
+      <section id="education" className="section-pad" aria-label="Education section">
+        <div className="container">
+          <div ref={addRevealRef} className="section-label reveal-up" data-delay="0">
+            Learning Journey
+          </div>
+          <h2
+            ref={addRevealRef}
+            className="display-md reveal-up"
+            data-delay="100"
+            style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)", color: "var(--text-1)", marginBottom: "4rem" }}
+          >
+            Education
+          </h2>
+
+          <div className="edu-timeline">
+            {/* AI & DS */}
+            <div ref={addRevealRef} className="edu-item reveal-up" data-delay="0">
+              <div className="edu-dot" aria-hidden="true" />
+              <div className="edu-period">2025 — 2028</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem" }}>
+                <div
+                  style={{
+                    width: "48px",
+                    height: "48px",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img src="/NIT.png" alt="Nexcore Institute of Technology" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                </div>
+                <h3 className="edu-title" style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)" }}>
+                  AI & Data Science Training
+                </h3>
+              </div>
+              <div className="edu-institution">Nexcore Institute of Technology</div>
+              <p className="edu-description">
+                Comprehensive 3-year training program focused on Artificial Intelligence and Data Science.
+                The curriculum covers fundamental concepts, practical applications, and hands-on projects
+                in AI/DS technologies. Alongside AI/DS, I&apos;ve been building a strong foundation in modern
+                web development — React, Next.js, Tailwind CSS, and Figma for design.
+              </p>
+            </div>
+
+            {/* HSC */}
+            <div ref={addRevealRef} className="edu-item reveal-up" data-delay="100">
+              <div className="edu-dot" aria-hidden="true" />
+              <div className="edu-period">2023 — 2024</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem" }}>
+                <div
+                  style={{
+                    width: "48px",
+                    height: "48px",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img src="/clg.png" alt="Marceline Junior College" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                </div>
+                <h3 className="edu-title" style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)" }}>
+                  Higher Secondary Certificate (HSC)
+                </h3>
+              </div>
+              <div className="edu-institution">Marceline Junior College</div>
+              <p className="edu-description">
+                Completed HSC (12th grade) with a focus on the Commerce stream. This foundation provided
+                essential knowledge in business, economics, and analytical thinking — complementing my
+                technical skills in full-stack development and artificial intelligence.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          CERTIFICATES
+      ══════════════════════════════════════════ */}
+      <section id="certificates" className="section-pad" aria-label="Certificates section">
+        <div className="container">
+          <div ref={addRevealRef} className="section-label reveal-up" data-delay="0">
+            Achievements
+          </div>
+          <h2
+            ref={addRevealRef}
+            className="display-md reveal-up"
+            data-delay="100"
+            style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)", color: "var(--text-1)", marginBottom: "0.75rem" }}
+          >
+            Certificates
+          </h2>
+          <p
+            ref={addRevealRef}
+            className="reveal-up body-lg"
+            data-delay="150"
+            style={{ marginBottom: "3rem", maxWidth: "480px" }}
+          >
+            A curated collection reflecting continuous learning in AI, digital skills, and emerging technologies.
+          </p>
+
+          <div className="certs-grid">
+            {CERTS.map((cert, i) => (
+              <button
+                key={i}
+                ref={addRevealRef}
+                className="cert-card reveal-up"
+                data-delay={`${(i % 3) * 80}`}
+                onClick={() => setSelectedCert(cert)}
+                aria-label={`View certificate: ${cert.title}`}
+                style={{ textAlign: "left", background: "none", width: "100%" }}
+              >
+                <div className="cert-img-wrap">
+                  <img src={cert.image} alt={cert.title} loading="lazy" />
+                </div>
+                <div className="cert-body">
+                  <div className="cert-issuer">{cert.issuer}</div>
+                  <h3 className="cert-title" style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)" }}>
+                    {cert.title}
+                  </h3>
+                  <div className="cert-date">{cert.date}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          CONTACT
+      ══════════════════════════════════════════ */}
+      <section id="contact" className="section-pad contact-section" aria-label="Contact section">
+        <div className="container">
+          <div className="contact-grid">
+
+            {/* ── LEFT ── Intro + Email */}
+            <div className="contact-left">
+              <div ref={addRevealRef} className="section-label reveal-up" data-delay="0">
+                Let&apos;s Connect
+              </div>
+
+              <h2
+                ref={addRevealRef}
+                className="display-md reveal-up contact-heading"
+                data-delay="80"
+              >
+                Let&apos;s connect and<br />build something.
+              </h2>
+
+              <p
+                ref={addRevealRef}
+                className="reveal-up contact-desc"
+                data-delay="150"
+              >
+                I&apos;m always open to new projects, collaborations, and opportunities.
+                Whether you have a question or just want to say hi — drop me a line.
+              </p>
+
+              {/* Email row */}
+              <div ref={addRevealRef} className="reveal-up" data-delay="220">
+                <a
+                  href="mailto:tahachoudhary54@gmail.com"
+                  className="contact-email-row"
+                  aria-label="Send email to tahachoudhary54@gmail.com"
+                >
+                  <span className="contact-email-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                      <rect x="2" y="4" width="20" height="16" rx="2" />
+                      <path d="M2 7l10 7 10-7" />
+                    </svg>
+                  </span>
+                  <span className="contact-email-text">tahachoudhary54@gmail.com</span>
+                  <span className="contact-email-arrow" aria-hidden="true">
+                    <ArrowRight size={16} />
+                  </span>
+                </a>
+              </div>
+            </div>
+
+            {/* ── RIGHT ── Social cards 2×2 */}
+            <div className="contact-right">
+              <div className="social-cards-grid">
+
+                {/* GitHub */}
+                <a
+                  ref={addRevealRef}
+                  href="https://github.com/tahachoudhary54"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-card social-card--github reveal-up"
+                  data-delay="100"
+                  aria-label="Visit Taha's GitHub profile"
+                >
+                  <div className="social-card-top">
+                    <span className="social-card-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                      </svg>
+                    </span>
+                    <span className="social-card-arrow" aria-hidden="true">
+                      <ArrowRight size={14} />
+                    </span>
+                  </div>
+                  <div className="social-card-body">
+                    <span className="social-card-name">GitHub</span>
+                    <span className="social-card-sub">View my repositories &amp; open source work</span>
+                  </div>
+                </a>
+
+                {/* LinkedIn */}
+                <a
+                  ref={addRevealRef}
+                  href="https://www.linkedin.com/in/taha-choudhary-3aa283358"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-card social-card--linkedin reveal-up"
+                  data-delay="180"
+                  aria-label="Visit Taha's LinkedIn profile"
+                >
+                  <div className="social-card-top">
+                    <span className="social-card-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                      </svg>
+                    </span>
+                    <span className="social-card-arrow" aria-hidden="true">
+                      <ArrowRight size={14} />
+                    </span>
+                  </div>
+                  <div className="social-card-body">
+                    <span className="social-card-name">LinkedIn</span>
+                    <span className="social-card-sub">Connect with me professionally</span>
+                  </div>
+                </a>
+
+                {/* Instagram */}
+                <a
+                  ref={addRevealRef}
+                  href="https://www.instagram.com/taha_choudhary_19/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-card social-card--instagram reveal-up"
+                  data-delay="260"
+                  aria-label="Visit Taha's Instagram profile"
+                >
+                  <div className="social-card-top">
+                    <span className="social-card-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                      </svg>
+                    </span>
+                    <span className="social-card-arrow" aria-hidden="true">
+                      <ArrowRight size={14} />
+                    </span>
+                  </div>
+                  <div className="social-card-body">
+                    <span className="social-card-name">Instagram</span>
+                    <span className="social-card-sub">Follow my creative journey</span>
+                  </div>
+                </a>
+
+                {/* WhatsApp */}
+                <a
+                  ref={addRevealRef}
+                  href="https://wa.me/919987343330"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-card social-card--whatsapp reveal-up"
+                  data-delay="340"
+                  aria-label="Message Taha on WhatsApp"
+                >
+                  <div className="social-card-top">
+                    <span className="social-card-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                      </svg>
+                    </span>
+                    <span className="social-card-arrow" aria-hidden="true">
+                      <ArrowRight size={14} />
+                    </span>
+                  </div>
+                  <div className="social-card-body">
+                    <span className="social-card-name">WhatsApp</span>
+                    <span className="social-card-sub">Send me a direct message</span>
+                  </div>
+                </a>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          FOOTER
+      ══════════════════════════════════════════ */}
+      <footer role="contentinfo">
+        <div className="container footer">
+          <p className="footer-copy">
+            © 2026 Taha Choudhary. All rights reserved. · Mumbai, India
+          </p>
+          <ul className="footer-links" role="list">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+      </footer>
+
+      {/* ══════════════════════════════════════════
+          FLOATING BUTTONS
+      ══════════════════════════════════════════ */}
+      {/* WhatsApp */}
+      <a
+        href="https://wa.me/919987343330"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="whatsapp-btn"
+        aria-label="Chat on WhatsApp"
+      >
+        <WhatsAppIconLg />
+      </a>
+
+      {/* Back to top */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className={`back-top ${showBackTop ? "visible" : ""}`}
+        aria-label="Back to top"
+      >
+        <ChevronUp size={18} />
+      </button>
+
+      {/* ══════════════════════════════════════════
+          CERTIFICATE MODAL
+      ══════════════════════════════════════════ */}
+      {selectedCert && (
+        <div
+          className="cert-modal-overlay"
+          onClick={() => setSelectedCert(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Certificate: ${selectedCert.title}`}
+        >
+          <div className="cert-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="cert-modal-close"
+              onClick={() => setSelectedCert(null)}
+              aria-label="Close certificate modal"
+            >
+              ×
+            </button>
+
+            <div
+              className="cert-modal-img"
+              onWheel={handleWheelZoom}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={() => {}}
+              onDoubleClick={() => setCertZoom(1)}
+              style={{ cursor: certZoom > 1 ? "grab" : "zoom-in" }}
+            >
+              <img
+                src={selectedCert.image}
+                alt={selectedCert.title}
+                style={{
+                  transform: `scale(${certZoom})`,
+                  transition: "transform 0.2s ease-out",
+                }}
+              />
+            </div>
+
+            <div className="cert-modal-details">
+              <h2 className="cert-modal-title" style={{ fontFamily: "var(--font-syne, 'Space Grotesk', sans-serif)" }}>
+                {selectedCert.title}
+              </h2>
+              <p className="cert-modal-issuer">{selectedCert.issuer}</p>
+              <p className="cert-modal-date">{selectedCert.date}</p>
+              <p className="cert-modal-desc">{selectedCert.description}</p>
+              <div className="cert-skill-tags">
+                {selectedCert.skills.map((s, i) => (
+                  <span key={i} className="cert-skill-tag">{s}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
+  );
+}
+
+/* ============================================
+   INLINE SVG ICON COMPONENTS
+   ============================================ */
+function ArrowRight({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 12h14M12 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+function ChevronUp({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="18 15 12 9 6 15" />
+    </svg>
+  );
+}
+
+function GitHubIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+    </svg>
+  );
+}
+
+function LinkedInIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+    </svg>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+    </svg>
+  );
+}
+
+function WhatsAppIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+    </svg>
+  );
+}
+
+function WhatsAppIconLg() {
+  return (
+    <svg viewBox="0 0 24 24" fill="white" width="28" height="28" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+    </svg>
   );
 }
