@@ -546,6 +546,13 @@ export default function Portfolio() {
 
       {/* Mobile Nav */}
       <div className={`mobile-nav ${menuOpen ? "open" : ""}`} role="dialog" aria-label="Mobile menu">
+        <button
+          className="mobile-nav-close"
+          onClick={() => setMenuOpen(false)}
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
         {["home", "about", "skills", "projects", "education", "certificates", "contact"].map((id) => (
           <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>
             {id.charAt(0).toUpperCase() + id.slice(1)}
@@ -585,6 +592,11 @@ export default function Portfolio() {
                 </span>
               </span>
             </h1>
+
+            {/* Mobile-only portrait — shows right below title */}
+            <div className="hero-portrait-mobile">
+              <img src="/Taha.png" alt="Taha Choudhary" className="hero-portrait-img" />
+            </div>
 
             {/* Subtitle */}
             <div ref={heroSubtitleRef} className="hero-subtitle">
