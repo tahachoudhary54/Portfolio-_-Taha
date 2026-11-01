@@ -247,6 +247,8 @@ h1, h2, h3, h4, h5, h6 {
   background: none;
   border: none;
   padding: 4px;
+  position: relative;
+  z-index: 1002;
 }
 
 .hamburger span {
@@ -268,7 +270,7 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   inset: 0;
   background: var(--bg);
-  z-index: 999;
+  z-index: 1001;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -291,20 +293,27 @@ h1, h2, h3, h4, h5, h6 {
 
 .mobile-nav-close {
   position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  background: none;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
   border: none;
-  color: var(--text-1);
-  font-size: 1.8rem;
-  cursor: pointer;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 2rem;
   line-height: 1;
-  padding: 0.25rem 0.5rem;
-  transition: color 0.2s, transform 0.2s;
+  cursor: pointer;
+  box-shadow: 0 0 20px var(--accent-glow, rgba(99,102,241,0.5));
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
 .mobile-nav-close:hover {
-  color: var(--accent);
-  transform: scale(1.15);
+  transform: scale(1.15) rotate(90deg);
+  box-shadow: 0 0 32px var(--accent-glow, rgba(99,102,241,0.8));
+  background: var(--accent-dark, #4f46e5);
 }
 
 /* Mobile-only portrait (shows right below title on small screens) */
@@ -434,6 +443,22 @@ h1, h2, h3, h4, h5, h6 {
   /* Skills grid */
   .skill-card {
     margin-bottom: 1rem;
+  }
+
+  /* ── PERFORMANCE: disable expensive effects on mobile ── */
+  /* Kill orb CSS animations */
+  .hero-orb {
+    animation: none !important;
+  }
+  /* Remove backdrop-filter blur (very expensive on mobile GPU) */
+  .nav.scrolled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(5, 6, 7, 0.97);
+  }
+  /* Hide particle canvas wrapper on mobile (JS also skips it) */
+  .hero-canvas-wrap {
+    display: none;
   }
 }
 
@@ -1748,7 +1773,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 1000;
   box-shadow: 0 4px 20px rgba(37,211,102,0.4);
   transition: all 0.3s ease;
   cursor: pointer;

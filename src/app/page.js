@@ -167,11 +167,18 @@ function ParticleCanvas() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    // Disable entirely on mobile — saves significant GPU/CPU
+    if (window.innerWidth <= 768) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let animId;
     let particles = [];
+    let hidden = false;
+
+    const onVisibility = () => { hidden = document.hidden; };
+    document.addEventListener("visibilitychange", onVisibility);
 
     const resize = () => {
       canvas.width = canvas.offsetWidth;
@@ -181,7 +188,8 @@ function ParticleCanvas() {
     resize();
     window.addEventListener("resize", resize);
 
-    const N = Math.min(60, Math.floor((canvas.width * canvas.height) / 18000));
+    // Reduced from 60 to 40 max particles
+    const N = Math.min(40, Math.floor((canvas.width * canvas.height) / 22000));
 
     for (let i = 0; i < N; i++) {
       particles.push({
@@ -195,6 +203,8 @@ function ParticleCanvas() {
     }
 
     const draw = () => {
+      if (hidden) { animId = requestAnimationFrame(draw); return; }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p) => {
         p.x += p.vx;
@@ -210,7 +220,7 @@ function ParticleCanvas() {
         ctx.fill();
       });
 
-      // Draw connections
+      // Draw connections (only on desktop where we have particles)
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
@@ -230,13 +240,13 @@ function ParticleCanvas() {
       animId = requestAnimationFrame(draw);
     };
 
-    // Reduce motion check
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!prefersReduced) draw();
 
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 
@@ -256,6 +266,31 @@ export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+    };
+  }, [menuOpen]);
+
   const [showBackTop, setShowBackTop] = useState(false);
   const [selectedCert, setSelectedCert] = useState(null);
   const [certZoom, setCertZoom] = useState(1);
@@ -550,6 +585,23 @@ export default function Portfolio() {
           className="mobile-nav-close"
           onClick={() => setMenuOpen(false)}
           aria-label="Close menu"
+          style={{
+            position: 'absolute',
+            top: '1.5rem',
+            right: '1.5rem',
+            width: '44px',
+            height: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '50%',
+            color: '#fff',
+            fontSize: '1.4rem',
+            cursor: 'pointer',
+            zIndex: 10,
+          }}
         >
           ✕
         </button>
@@ -1194,6 +1246,7 @@ export default function Portfolio() {
         rel="noopener noreferrer"
         className="whatsapp-btn"
         aria-label="Chat on WhatsApp"
+        style={{ display: menuOpen ? 'none' : 'flex' }}
       >
         <WhatsAppIconLg />
       </a>
